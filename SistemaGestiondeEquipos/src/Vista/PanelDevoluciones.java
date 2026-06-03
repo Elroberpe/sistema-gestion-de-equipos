@@ -30,10 +30,7 @@ import javax.swing.table.DefaultTableModel;
 import Controller.DevolucionController;
 import DAO.DevolucionDao;
 import DTO.PrestamoActivoDTO;
-<<<<<<< HEAD
 import DAO.DevolucionDao;
-=======
->>>>>>> refs/heads/feature/devoluciones
 
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionListener;
