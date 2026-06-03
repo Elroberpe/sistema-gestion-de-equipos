@@ -51,7 +51,7 @@ public class Prestamo {
 	public void setFechaDevolucionPrevista(LocalDate fechaDevolucionPrevista) {this.fechaDevolucionPrevista=fechaDevolucionPrevista;}
 	
 	public String getObservaciones() {return observaciones;}
-	public void setObservasiones(String observaciones) {this.observaciones=observaciones;}
+	public void setObservaciones(String observaciones) {this.observaciones=observaciones;}
 	
 	public String getEstado() {return estado;}
 	public void setEstado(String estado) {this.estado=estado;}
