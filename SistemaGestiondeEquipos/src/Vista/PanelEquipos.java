@@ -5,6 +5,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -18,20 +19,29 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.util.ArrayList;
 import javax.swing.border.EmptyBorder;
+
+import DAO.EquipoDAO;
+import Modelo.Equipo;
 
 public class PanelEquipos extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    private JPanel panelTitulo;
+    private JTextField txtCodigo, txtNombre, txtMarca, txtModelo, txtSerie, txtBuscar;
+    private JComboBox<String> cboTipo, cboEstado;
+    private JTable table;
+    private DefaultTableModel modelo;
+    private EquipoDAO equipoDAO = new EquipoDAO();
+    private int idEquipoSeleccionado = -1;
 
     public PanelEquipos() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 247, 250));
 
         // PANEL TÍTULO
-        panelTitulo = new JPanel();
+        JPanel panelTitulo = new JPanel();
         panelTitulo.setBorder(new MatteBorder(0, 0, 1, 0, new Color(220, 220, 220)));
         panelTitulo.setBackground(Color.WHITE);
         panelTitulo.setPreferredSize(new Dimension(0, 50));
@@ -55,7 +65,6 @@ public class PanelEquipos extends JPanel {
         scrollPrincipal.getVerticalScrollBar().setUnitIncrement(16);
         scrollPrincipal.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPrincipal.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
         add(scrollPrincipal, BorderLayout.CENTER);
 
         // PANEL FORMULARIO
@@ -66,11 +75,11 @@ public class PanelEquipos extends JPanel {
         panelFormulario.setLayout(null);
         panelPrincipal.add(panelFormulario, BorderLayout.WEST);
 
-        JLabel lblDetalleEquipo = new JLabel("Detalle del Equipo");
-        lblDetalleEquipo.setBounds(16, 12, 250, 25);
-        lblDetalleEquipo.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        lblDetalleEquipo.setForeground(new Color(55, 65, 81));
-        panelFormulario.add(lblDetalleEquipo);
+        JLabel lblDetalle = new JLabel("Detalle del Equipo");
+        lblDetalle.setBounds(16, 12, 250, 25);
+        lblDetalle.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        lblDetalle.setForeground(new Color(55, 65, 81));
+        panelFormulario.add(lblDetalle);
 
         JSeparator separator = new JSeparator();
         separator.setBounds(0, 45, 310, 2);
@@ -81,9 +90,8 @@ public class PanelEquipos extends JPanel {
         lblCodigo.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblCodigo);
 
-        JTextField txtCodigo = new JTextField();
+        txtCodigo = new JTextField();
         txtCodigo.setBounds(16, 85, 278, 32);
-        txtCodigo.setText("Ej: LPT-001");
         txtCodigo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtCodigo.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
         panelFormulario.add(txtCodigo);
@@ -93,7 +101,7 @@ public class PanelEquipos extends JPanel {
         lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblNombre);
 
-        JTextField txtNombre = new JTextField();
+        txtNombre = new JTextField();
         txtNombre.setBounds(16, 153, 278, 32);
         txtNombre.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtNombre.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
@@ -104,10 +112,9 @@ public class PanelEquipos extends JPanel {
         lblTipo.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblTipo);
 
-        JComboBox<String> cboTipo = new JComboBox<>();
-        cboTipo.setModel(new DefaultComboBoxModel<String>(
-                new String[] { "Laptop", "Monitor", "Proyector", "Accesorio", "Impresora" }
-        ));
+        cboTipo = new JComboBox<>();
+        cboTipo.setModel(new DefaultComboBoxModel<>(
+                new String[]{"Laptop", "Monitor", "Proyector", "Accesorio", "Impresora"}));
         cboTipo.setBounds(16, 221, 278, 32);
         cboTipo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         panelFormulario.add(cboTipo);
@@ -117,7 +124,7 @@ public class PanelEquipos extends JPanel {
         lblMarca.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblMarca);
 
-        JTextField txtMarca = new JTextField();
+        txtMarca = new JTextField();
         txtMarca.setBounds(16, 289, 132, 32);
         txtMarca.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtMarca.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
@@ -128,7 +135,7 @@ public class PanelEquipos extends JPanel {
         lblModelo.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblModelo);
 
-        JTextField txtModelo = new JTextField();
+        txtModelo = new JTextField();
         txtModelo.setBounds(162, 289, 132, 32);
         txtModelo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtModelo.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
@@ -139,7 +146,7 @@ public class PanelEquipos extends JPanel {
         lblSerie.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblSerie);
 
-        JTextField txtSerie = new JTextField();
+        txtSerie = new JTextField();
         txtSerie.setBounds(16, 357, 278, 32);
         txtSerie.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtSerie.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
@@ -150,10 +157,9 @@ public class PanelEquipos extends JPanel {
         lblEstado.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblEstado);
 
-        JComboBox<String> cboEstado = new JComboBox<>();
-        cboEstado.setModel(new DefaultComboBoxModel<String>(
-                new String[] { "Disponible", "Prestado", "Mantenimiento", "Baja" }
-        ));
+        cboEstado = new JComboBox<>();
+        cboEstado.setModel(new DefaultComboBoxModel<>(
+                new String[]{"Disponible", "Prestado", "Mantenimiento", "Baja"}));
         cboEstado.setBounds(16, 425, 278, 32);
         cboEstado.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         panelFormulario.add(cboEstado);
@@ -199,7 +205,7 @@ public class PanelEquipos extends JPanel {
         panelBuscar.setLayout(new BorderLayout(10, 0));
         panelTabla.add(panelBuscar, BorderLayout.NORTH);
 
-        JTextField txtBuscar = new JTextField();
+        txtBuscar = new JTextField();
         txtBuscar.setText("Buscar equipo...");
         txtBuscar.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         txtBuscar.setPreferredSize(new Dimension(250, 32));
@@ -235,30 +241,21 @@ public class PanelEquipos extends JPanel {
         scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         panelTabla.add(scrollPane, BorderLayout.CENTER);
 
-        JTable table = new JTable();
-
-        DefaultTableModel modelo = new DefaultTableModel(
-                new Object[][] {
-                        { "LPT-001", "Laptop Desarrollo A", "Laptop", "Dell Latitude 5420", "SN-847291A", "Disponible" },
-                        { "MON-045", "Monitor Sala Juntas", "Monitor", "LG UltraGear 27", "LG-M9921", "Prestado" },
-                        { "PRY-002", "Proyector Móvil 1", "Proyector", "Epson PowerLite", "EPS-X450", "Disponible" },
-                        { "LPT-012", "Laptop Diseño B", "Laptop", "Apple MacBook Pro 16", "C02DG54XMD6R", "Mantenimiento" },
-                        { "ACC-089", "Adaptador USB-C a HDMI", "Accesorio", "Anker Hub 5-in-1", "-", "Prestado" }
-                },
-                new String[] {
-                        "Código", "Nombre", "Tipo", "Marca / Modelo", "Serie", "Estado"
-                }
+        modelo = new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"ID", "Código", "Nombre", "Tipo", "Marca", "Modelo", "Serie", "Estado"}
         ) {
             private static final long serialVersionUID = 1L;
-
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
+            public boolean isCellEditable(int row, int column) { return false; }
         };
 
-        table.setModel(modelo);
+        table = new JTable(modelo);
         scrollPane.setViewportView(table);
+
+        // Ocultar columna ID
+        table.getColumnModel().getColumn(0).setMinWidth(0);
+        table.getColumnModel().getColumn(0).setMaxWidth(0);
+        table.getColumnModel().getColumn(0).setPreferredWidth(0);
 
         table.setRowHeight(38);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -266,20 +263,133 @@ public class PanelEquipos extends JPanel {
         table.setGridColor(new Color(230, 230, 230));
         table.setSelectionBackground(new Color(227, 242, 253));
         table.setSelectionForeground(Color.BLACK);
-        table.setShowVerticalLines(true);
-        table.setShowHorizontalLines(true);
-
         table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
         table.getTableHeader().setBackground(new Color(38, 50, 56));
         table.getTableHeader().setForeground(Color.WHITE);
         table.getTableHeader().setPreferredSize(new Dimension(0, 36));
         table.getTableHeader().setReorderingAllowed(false);
 
-        table.getColumnModel().getColumn(0).setPreferredWidth(80);
-        table.getColumnModel().getColumn(1).setPreferredWidth(170);
-        table.getColumnModel().getColumn(2).setPreferredWidth(100);
-        table.getColumnModel().getColumn(3).setPreferredWidth(180);
-        table.getColumnModel().getColumn(4).setPreferredWidth(130);
-        table.getColumnModel().getColumn(5).setPreferredWidth(110);
+        // ACCIONES BOTONES
+        btnGuardar.addActionListener(e -> guardarEquipo());
+        btnLimpiar.addActionListener(e -> limpiarCampos());
+        btnEliminar.addActionListener(e -> eliminarEquipo());
+        btnFiltrar.addActionListener(e -> buscarEquipo());
+        btnActualizar.addActionListener(e -> cargarTabla());
+
+        // Seleccionar fila
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) cargarFormulario();
+        });
+
+        cargarTabla();
+    }
+
+    private void cargarTabla() {
+        modelo.setRowCount(0);
+        ArrayList<Equipo> lista = equipoDAO.listar();
+        for (Equipo eq : lista) {
+            modelo.addRow(new Object[]{
+                eq.getIdEquipo(), eq.getCodigo(), eq.getNombre(),
+                eq.getTipo(), eq.getMarca(), eq.getModelo(),
+                eq.getNumeroSerie(), eq.getEstado()
+            });
+        }
+    }
+
+    private void guardarEquipo() {
+        String codigo = txtCodigo.getText().trim();
+        String nombre = txtNombre.getText().trim();
+        String marca = txtMarca.getText().trim();
+
+        if (codigo.isEmpty() || nombre.isEmpty() || marca.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Código, Nombre y Marca son obligatorios.");
+            return;
+        }
+
+        Equipo eq = new Equipo();
+        eq.setCodigo(codigo);
+        eq.setNombre(nombre);
+        eq.setTipo(cboTipo.getSelectedItem().toString());
+        eq.setMarca(marca);
+        eq.setModelo(txtModelo.getText().trim());
+        eq.setNumeroSerie(txtSerie.getText().trim());
+        eq.setEstado(cboEstado.getSelectedItem().toString());
+
+        if (idEquipoSeleccionado == -1) {
+            if (equipoDAO.guardar(eq)) {
+                JOptionPane.showMessageDialog(this, "Equipo guardado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al guardar.");
+            }
+        } else {
+            eq.setIdEquipo(idEquipoSeleccionado);
+            if (equipoDAO.actualizar(eq)) {
+                JOptionPane.showMessageDialog(this, "Equipo actualizado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al actualizar.");
+            }
+        }
+        limpiarCampos();
+        cargarTabla();
+    }
+
+    private void eliminarEquipo() {
+        if (idEquipoSeleccionado == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un equipo de la tabla.");
+            return;
+        }
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "¿Estás seguro de eliminar este equipo?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            if (equipoDAO.eliminar(idEquipoSeleccionado)) {
+                JOptionPane.showMessageDialog(this, "Equipo eliminado.");
+                limpiarCampos();
+                cargarTabla();
+            } else {
+                JOptionPane.showMessageDialog(this, "No se puede eliminar. Tiene préstamos registrados.");
+            }
+        }
+    }
+
+    private void buscarEquipo() {
+        String texto = txtBuscar.getText().trim();
+        if (texto.equals("Buscar equipo...") || texto.isEmpty()) {
+            cargarTabla();
+            return;
+        }
+        modelo.setRowCount(0);
+        ArrayList<Equipo> lista = equipoDAO.buscarPorNombreOCodigo(texto);
+        for (Equipo eq : lista) {
+            modelo.addRow(new Object[]{
+                eq.getIdEquipo(), eq.getCodigo(), eq.getNombre(),
+                eq.getTipo(), eq.getMarca(), eq.getModelo(),
+                eq.getNumeroSerie(), eq.getEstado()
+            });
+        }
+    }
+
+    private void cargarFormulario() {
+        int fila = table.getSelectedRow();
+        if (fila == -1) return;
+        idEquipoSeleccionado = (int) modelo.getValueAt(fila, 0);
+        txtCodigo.setText(modelo.getValueAt(fila, 1).toString());
+        txtNombre.setText(modelo.getValueAt(fila, 2).toString());
+        cboTipo.setSelectedItem(modelo.getValueAt(fila, 3).toString());
+        txtMarca.setText(modelo.getValueAt(fila, 4).toString());
+        txtModelo.setText(modelo.getValueAt(fila, 5) != null ? modelo.getValueAt(fila, 5).toString() : "");
+        txtSerie.setText(modelo.getValueAt(fila, 6) != null ? modelo.getValueAt(fila, 6).toString() : "");
+        cboEstado.setSelectedItem(modelo.getValueAt(fila, 7).toString());
+    }
+
+    private void limpiarCampos() {
+        idEquipoSeleccionado = -1;
+        txtCodigo.setText("");
+        txtNombre.setText("");
+        txtMarca.setText("");
+        txtModelo.setText("");
+        txtSerie.setText("");
+        cboTipo.setSelectedIndex(0);
+        cboEstado.setSelectedIndex(0);
+        table.clearSelection();
     }
 }

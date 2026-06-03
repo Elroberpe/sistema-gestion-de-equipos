@@ -29,7 +29,7 @@ import javax.swing.table.DefaultTableModel;
 
 import Controller.DevolucionController;
 import DTO.PrestamoActivoDTO;
-import Dao.DevolucionDao;
+import DAO.DevolucionDao;
 
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionListener;
