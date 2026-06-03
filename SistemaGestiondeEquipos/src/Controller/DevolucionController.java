@@ -23,5 +23,9 @@ public class DevolucionController {
 		return devolucionDao.buscarPrestamoActivo(idPrestamo, dni, codigoEquipoi);
 	}
 	
+	public void actualizarEstadoPrestamosVencidos() {
+		devolucionDao.actualizarEstadoPrestamoVencidos();
+	}
+	
 	
 }

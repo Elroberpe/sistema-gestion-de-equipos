@@ -187,8 +187,8 @@ public class PanelDevoluciones extends JPanel {
             buscarPrestamo();
         });
         
-        btnBuscar.setMaximumSize(new Dimension(65, 32));
-        btnBuscar.setMinimumSize(new Dimension(65, 32));
+        btnBuscar.setMaximumSize(new Dimension(120, 32));
+        btnBuscar.setMinimumSize(new Dimension(120, 32));
         btnBuscar.setPreferredSize(new Dimension(120, 32));
         btnBuscar.setBackground(new Color(25, 118, 210));
         btnBuscar.setForeground(Color.WHITE);
@@ -513,6 +513,8 @@ public class PanelDevoluciones extends JPanel {
     
     private void listarPrestamosActivos() {
     	devolucionController = new DevolucionController();
+    	
+    	devolucionController.actualizarEstadoPrestamosVencidos();
     	
     	ArrayList<PrestamoActivoDTO> lista = devolucionController.listarPrestamosActivos();
     	DefaultTableModel modelo = new DefaultTableModel(

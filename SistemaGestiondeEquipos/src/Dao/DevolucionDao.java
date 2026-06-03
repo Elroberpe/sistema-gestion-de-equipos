@@ -162,7 +162,27 @@ public class DevolucionDao {
 			return lista;
 			
 		}
-
+		
+		public void actualizarEstadoPrestamoVencidos() {
+			
+			String consulta = """
+					UPDATE Prestamo 
+					SET Estado = 'Vencido'
+					WHERE Estado = 'Activo' AND FechaDevolucionPrevista < CAST(GETDATE () as DATE)
+					""";
+			try (
+				Connection con = Conexion.getConexion();
+				PreparedStatement ps = con.prepareStatement(consulta)
+					){		
+				ps.executeUpdate();		
+			}
+			
+			catch (SQLException e) {
+				System.out.println("Error al actualizar prestamos vencidos: " + e.getMessage());
+			}
+			
+					
+		}
 		
 		public boolean registrarDevolucion(int idPrestamo, int idEquipo, String estadoEquipo, String observacion) {
 			
