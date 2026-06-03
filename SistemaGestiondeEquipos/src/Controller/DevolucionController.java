@@ -2,8 +2,8 @@ package Controller;
 
 import java.util.ArrayList;
 
+import DAO.DevolucionDao;
 import DTO.PrestamoActivoDTO;
-import Dao.DevolucionDao;
 
 public class DevolucionController {
 	private DevolucionDao devolucionDao;
