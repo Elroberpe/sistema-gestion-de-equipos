@@ -28,13 +28,11 @@ import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
 
 import Controller.DevolucionController;
-import DAO.DevolucionDao;
 import DTO.PrestamoActivoDTO;
-import DAO.DevolucionDao;
+
+
 
 import javax.swing.border.EmptyBorder;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class PanelDevoluciones extends JPanel {
 	

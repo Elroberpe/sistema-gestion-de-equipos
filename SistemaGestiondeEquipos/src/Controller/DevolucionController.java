@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import DAO.DevolucionDao;
 import DTO.PrestamoActivoDTO;
 
-import DAO.DevolucionDao;
-
 
 public class DevolucionController {
 	private DevolucionDao devolucionDao;
