@@ -9,6 +9,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 import javax.swing.Box;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -23,10 +26,34 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
+
+import Controller.DevolucionController;
+import DTO.PrestamoActivoDTO;
+import Dao.DevolucionDao;
+
 import javax.swing.border.EmptyBorder;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class PanelDevoluciones extends JPanel {
-
+	
+	private JTable tablePrestamos;
+	
+	private JLabel lblValorSolicitante;
+	private JLabel lblValorEquipo;
+	private JLabel lblValorFechaPrestamo;
+	private JLabel lblValorFechaLimite;
+	private JLabel lblValorFechaActual;
+	private JLabel lblValorEstadoDevolucion;
+	
+	private JTextField txtCodigoPrestamo;
+	private JTextField txtDniSolicitante;
+	private JTextField txtCodigoEquipo; 
+	
+	private JButton btnBuscar;
+	
+	private DevolucionController devolucionController;
+	
     private static final long serialVersionUID = 1L;
 
     public PanelDevoluciones() {
@@ -112,7 +139,7 @@ public class PanelDevoluciones extends JPanel {
         gbcLblCodigoEquipo.insets = new Insets(2, 5, 2, 5);
         panelFiltros.add(lblCodigoEquipo, gbcLblCodigoEquipo);
         
-        JTextField txtCodigoPrestamo = new JTextField("Ej. PR-1042");
+        txtCodigoPrestamo = new JTextField();
         txtCodigoPrestamo.setMinimumSize(new Dimension(0, 32));
         txtCodigoPrestamo.setPreferredSize(new Dimension(0, 32));
         txtCodigoPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -126,7 +153,7 @@ public class PanelDevoluciones extends JPanel {
         gbcTxtCodigoPrestamo.insets = new Insets(2, 5, 2, 5);
         panelFiltros.add(txtCodigoPrestamo, gbcTxtCodigoPrestamo);
 
-        JTextField txtDniSolicitante = new JTextField("Ej. 74839201");
+        txtDniSolicitante = new JTextField();
         txtDniSolicitante.setMinimumSize(new Dimension(0, 32));
         txtDniSolicitante.setPreferredSize(new Dimension(0, 32));
         txtDniSolicitante.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -140,7 +167,7 @@ public class PanelDevoluciones extends JPanel {
         gbcTxtDniSolicitante.insets = new Insets(2, 5, 2, 5);
         panelFiltros.add(txtDniSolicitante, gbcTxtDniSolicitante);
 
-        JTextField txtCodigoEquipo = new JTextField("Ej. LPT-HP-005");
+        txtCodigoEquipo = new JTextField();
         txtCodigoEquipo.setMinimumSize(new Dimension(0, 32));
         txtCodigoEquipo.setPreferredSize(new Dimension(0, 32));
         txtCodigoEquipo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -154,7 +181,12 @@ public class PanelDevoluciones extends JPanel {
         gbcTxtCodigoEquipo.insets = new Insets(2, 5, 2, 5);
         panelFiltros.add(txtCodigoEquipo, gbcTxtCodigoEquipo);
 
-        JButton btnBuscar = new JButton("Buscar");
+        btnBuscar = new JButton("Buscar");
+        
+        btnBuscar.addActionListener(e -> {
+            buscarPrestamo();
+        });
+        
         btnBuscar.setMaximumSize(new Dimension(65, 32));
         btnBuscar.setMinimumSize(new Dimension(65, 32));
         btnBuscar.setPreferredSize(new Dimension(120, 32));
@@ -172,25 +204,18 @@ public class PanelDevoluciones extends JPanel {
         panelFiltros.add(btnBuscar, gbcBtnBuscar);
         
         //tabla de prestamos
-     // =======================
-     // TABLA DE PRÉSTAMOS ACTIVOS
-     // =======================
 
         JScrollPane scrollPrestamos = new JScrollPane();
         scrollPrestamos.setBorder(new EmptyBorder(0, 0, 0, 0));
         scrollPrestamos.setPreferredSize(new Dimension(0, 130));
         panelBusqueda.add(scrollPrestamos, BorderLayout.SOUTH);
 
-        JTable tablePrestamos = new JTable();
+        tablePrestamos = new JTable();
 
         DefaultTableModel modeloPrestamos = new DefaultTableModel(
-                new Object[][] {
-                        { "PR-1040", "Juan Pérez Gómez", "LPT-DELL-02 (Dell Latitude 5420)", "10/10/2023", "15/10/2023" },
-                        { "PR-1042", "María García López", "LPT-HP-005 (HP EliteBook 840)", "12/10/2023", "14/10/2023" },
-                        { "PR-1045", "Carlos Mendoza Ríos", "PRY-EPS-002 (Proyector Epson)", "14/10/2023", "16/10/2023" }
-                },
+                new Object[][] {},
                 new String[] {
-                        "ID", "Solicitante", "Equipo", "Fecha Préstamo", "Fecha Límite"
+                        "ID", "Solicitante","Dni", "Equipo", "Fecha Préstamo", "Fecha Límite"
                 }
         ) {
             private static final long serialVersionUID = 1L;
@@ -203,6 +228,7 @@ public class PanelDevoluciones extends JPanel {
 
         tablePrestamos.setModel(modeloPrestamos);
         scrollPrestamos.setViewportView(tablePrestamos);
+        listarPrestamosActivos();
 
         tablePrestamos.setRowHeight(34);
         tablePrestamos.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -224,6 +250,12 @@ public class PanelDevoluciones extends JPanel {
         tablePrestamos.getColumnModel().getColumn(2).setPreferredWidth(300);
         tablePrestamos.getColumnModel().getColumn(3).setPreferredWidth(130);
         tablePrestamos.getColumnModel().getColumn(4).setPreferredWidth(130);
+        
+        tablePrestamos.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                mostrarDetallePrestamoSeleccionado();
+            }
+        });
         
         //panel prestamo selecionado
 
@@ -263,7 +295,7 @@ public class PanelDevoluciones extends JPanel {
         JLabel lblDatosSolicitante = new JLabel("Datos del Solicitante:");
         lblDatosSolicitante.setFont(new Font("Segoe UI", Font.BOLD, 12));
 
-        JLabel lblValorSolicitante = new JLabel("María García López (DNI: 74839201)");
+        lblValorSolicitante = new JLabel("-");
         lblValorSolicitante.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         filaSolicitante.add(lblDatosSolicitante);
@@ -278,7 +310,7 @@ public class PanelDevoluciones extends JPanel {
         JLabel lblDatosEquipo = new JLabel("Datos del Equipo:");
         lblDatosEquipo.setFont(new Font("Segoe UI", Font.BOLD, 12));
 
-        JLabel lblValorEquipo = new JLabel("LPT-HP-005 - HP EliteBook 840 G8");
+        lblValorEquipo = new JLabel("-");
         lblValorEquipo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         filaEquipo.add(lblDatosEquipo);
@@ -293,7 +325,7 @@ public class PanelDevoluciones extends JPanel {
         JLabel lblFechaPrestamo = new JLabel("Fecha de Préstamo:");
         lblFechaPrestamo.setFont(new Font("Segoe UI", Font.BOLD, 12));
 
-        JLabel lblValorFechaPrestamo = new JLabel("12/10/2023 09:30 AM");
+        lblValorFechaPrestamo = new JLabel("-");
         lblValorFechaPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         filaFechaPrestamo.add(lblFechaPrestamo);
@@ -308,7 +340,7 @@ public class PanelDevoluciones extends JPanel {
         JLabel lblFechaLimite = new JLabel("Fecha Límite:");
         lblFechaLimite.setFont(new Font("Segoe UI", Font.BOLD, 12));
 
-        JLabel lblValorFechaLimite = new JLabel("14/10/2023 18:00 PM");
+        lblValorFechaLimite = new JLabel("-");
         lblValorFechaLimite.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         filaFechaLimite.add(lblFechaLimite);
@@ -323,7 +355,7 @@ public class PanelDevoluciones extends JPanel {
         JLabel lblFechaActual = new JLabel("Fecha Actual:");
         lblFechaActual.setFont(new Font("Segoe UI", Font.BOLD, 12));
 
-        JLabel lblValorFechaActual = new JLabel("15/10/2023 10:15 AM");
+        lblValorFechaActual = new JLabel("-");
         lblValorFechaActual.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         filaFechaActual.add(lblFechaActual);
@@ -338,7 +370,7 @@ public class PanelDevoluciones extends JPanel {
         JLabel lblEstadoDevolucion = new JLabel("Estado de Devolución:");
         lblEstadoDevolucion.setFont(new Font("Segoe UI", Font.BOLD, 12));
 
-        JLabel lblValorEstadoDevolucion = new JLabel("⚠ Vencido (Demora de 1 día)");
+        lblValorEstadoDevolucion = new JLabel("-");
         lblValorEstadoDevolucion.setFont(new Font("Segoe UI", Font.BOLD, 12));
         lblValorEstadoDevolucion.setForeground(new Color(198, 40, 40));
         lblValorEstadoDevolucion.setOpaque(true);
@@ -477,5 +509,173 @@ public class PanelDevoluciones extends JPanel {
         gbcBtnRegistrarDevolucion.insets = new Insets(2, 5, 2, 5);
 
         panelContenidoRecepcion.add(btnRegistrarDevolucion, gbcBtnRegistrarDevolucion);
+    }
+    
+    private void listarPrestamosActivos() {
+    	devolucionController = new DevolucionController();
+    	
+    	ArrayList<PrestamoActivoDTO> lista = devolucionController.listarPrestamosActivos();
+    	DefaultTableModel modelo = new DefaultTableModel(
+    			new Object[][] {},
+    			new String[] {
+    					"ID", "Solicitante","Dni", "Equipo", "Fecha Préstamo", "Fecha Límite" , "Estado"
+    			}
+    			
+    			) {
+    		
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+    	};
+    	
+    	for(PrestamoActivoDTO p : lista) {
+    		Object[] fila = {
+    				p.getIdPrestamo(),
+    				p.getSolicitante(),
+    				p.getdni(),
+    				p.getNombreEquipo(),
+    				p.getFechaPrestamo(),
+    				p.getFechaDevolucionPrevista(),
+    				p.getEstadoPrestamo()
+    		};
+    		modelo.addRow(fila);
+    	}
+    		tablePrestamos.setModel(modelo);
+    		
+    		//Ocultar DNI
+    		
+    		tablePrestamos.getColumnModel().getColumn(2).setMinWidth(0);
+    		tablePrestamos.getColumnModel().getColumn(2).setMaxWidth(0);
+    		tablePrestamos.getColumnModel().getColumn(2).setPreferredWidth(0);
+    		
+    		//Ocultar estado 
+    		tablePrestamos.getColumnModel().getColumn(6).setMinWidth(0);
+    		tablePrestamos.getColumnModel().getColumn(6).setMaxWidth(0);
+    		tablePrestamos.getColumnModel().getColumn(6).setPreferredWidth(0);
+    		
+    	    // Tamaños de columnas visibles
+    	    tablePrestamos.getColumnModel().getColumn(0).setPreferredWidth(80);
+    	    tablePrestamos.getColumnModel().getColumn(1).setPreferredWidth(180);
+    	    tablePrestamos.getColumnModel().getColumn(3).setPreferredWidth(300);
+    	    tablePrestamos.getColumnModel().getColumn(4).setPreferredWidth(130);
+    	    tablePrestamos.getColumnModel().getColumn(5).setPreferredWidth(130);
+    	
+    }
+    
+    private void mostrarDetallePrestamoSeleccionado() {
+        int fila = tablePrestamos.getSelectedRow();
+
+        if (fila == -1) {
+            return;
+        }
+
+        int filaModelo = tablePrestamos.convertRowIndexToModel(fila);
+
+        DefaultTableModel modelo = (DefaultTableModel) tablePrestamos.getModel();
+
+        String solicitante = modelo.getValueAt(filaModelo, 1).toString();
+        String dni = modelo.getValueAt(fila, 2).toString();
+        String equipo = modelo.getValueAt(filaModelo, 3).toString();
+        String fechaPrestamo = modelo.getValueAt(filaModelo, 4).toString();
+        String fechaLimite = modelo.getValueAt(filaModelo, 5).toString();
+        String estado = modelo.getValueAt(filaModelo, 6).toString();
+
+        lblValorSolicitante.setText(solicitante+" ("+ "DNI: "+  dni + ")");
+        lblValorEquipo.setText(equipo);
+        lblValorFechaPrestamo.setText(fechaPrestamo);
+        lblValorFechaLimite.setText(fechaLimite);
+        lblValorFechaActual.setText(LocalDateTime.now().toLocalDate().toString());
+        lblValorEstadoDevolucion.setText(estado);
+        
+        actualizarColorEstado(estado);
+
+    }
+    
+    private void actualizarColorEstado(String estado) {
+        lblValorEstadoDevolucion.setOpaque(true);
+        lblValorEstadoDevolucion.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+
+        if (estado.equalsIgnoreCase("Vencido")) {
+            lblValorEstadoDevolucion.setText("⚠ Vencido");
+            lblValorEstadoDevolucion.setForeground(new Color(198, 40, 40));
+            lblValorEstadoDevolucion.setBackground(new Color(255, 235, 238));
+        } else if (estado.equalsIgnoreCase("Activo")) {
+            lblValorEstadoDevolucion.setText("Activo");
+            lblValorEstadoDevolucion.setForeground(new Color(46, 125, 50));
+            lblValorEstadoDevolucion.setBackground(new Color(232, 245, 233));
+        } else if (estado.equalsIgnoreCase("Devuelto")) {
+            lblValorEstadoDevolucion.setText("Devuelto");
+            lblValorEstadoDevolucion.setForeground(new Color(25, 118, 210));
+            lblValorEstadoDevolucion.setBackground(new Color(227, 242, 253));
+        } else {
+            lblValorEstadoDevolucion.setText(estado);
+            lblValorEstadoDevolucion.setForeground(Color.DARK_GRAY);
+            lblValorEstadoDevolucion.setBackground(new Color(245, 245, 245));
+        }
+    }
+    
+    private void buscarPrestamo() {
+    	devolucionController = new DevolucionController();
+    	
+    	String idPrestamo = txtCodigoPrestamo.getText();
+    	String dni = txtDniSolicitante.getText();
+    	String codigoEquipo = txtCodigoEquipo.getText();
+    	
+    	ArrayList<PrestamoActivoDTO> lista = devolucionController.buscarPrestamoActivos(idPrestamo, dni,codigoEquipo);	
+    	
+    	cargarTablaPrestamo(lista);
+    }
+    
+    private void cargarTablaPrestamo(ArrayList<PrestamoActivoDTO> lista) {
+    	DefaultTableModel modelo = new DefaultTableModel(
+    			new Object[][] {},
+    			new String[] {
+    					"ID", "Solicitante","Dni", "Equipo", "Fecha Préstamo", "Fecha Límite" , "Estado"
+    			}
+    			
+    			) {
+    		
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+    	};
+    	
+    	for(PrestamoActivoDTO p : lista) {
+    		Object[] fila = {
+    				p.getIdPrestamo(),
+    				p.getSolicitante(),
+    				p.getdni(),
+    				p.getNombreEquipo(),
+    				p.getFechaPrestamo(),
+    				p.getFechaDevolucionPrevista(),
+    				p.getEstadoPrestamo()
+    		};
+    		modelo.addRow(fila);
+    	}
+    		tablePrestamos.setModel(modelo);
+    		
+    		//Ocultar DNI
+    		
+    		tablePrestamos.getColumnModel().getColumn(2).setMinWidth(0);
+    		tablePrestamos.getColumnModel().getColumn(2).setMaxWidth(0);
+    		tablePrestamos.getColumnModel().getColumn(2).setPreferredWidth(0);
+    		
+    		//Ocultar estado 
+    		tablePrestamos.getColumnModel().getColumn(6).setMinWidth(0);
+    		tablePrestamos.getColumnModel().getColumn(6).setMaxWidth(0);
+    		tablePrestamos.getColumnModel().getColumn(6).setPreferredWidth(0);
+    		
+    	    // Tamaños de columnas visibles
+    	    tablePrestamos.getColumnModel().getColumn(0).setPreferredWidth(80);
+    	    tablePrestamos.getColumnModel().getColumn(1).setPreferredWidth(180);
+    	    tablePrestamos.getColumnModel().getColumn(3).setPreferredWidth(300);
+    	    tablePrestamos.getColumnModel().getColumn(4).setPreferredWidth(130);
+    	    tablePrestamos.getColumnModel().getColumn(5).setPreferredWidth(130);
     }
 }

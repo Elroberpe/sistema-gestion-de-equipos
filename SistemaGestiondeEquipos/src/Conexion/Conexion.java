@@ -13,7 +13,7 @@ public class Conexion {
           + "trustServerCertificate=true;";
 
     private static final String USER = "sa";
-    private static final String PASSWORD = "2233";
+    private static final String PASSWORD = "123456";
 
     public static Connection getConexion() {
         try {
