@@ -28,8 +28,12 @@ import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
 
 import Controller.DevolucionController;
-import DTO.PrestamoActivoDTO;
 import DAO.DevolucionDao;
+import DTO.PrestamoActivoDTO;
+<<<<<<< HEAD
+import DAO.DevolucionDao;
+=======
+>>>>>>> refs/heads/feature/devoluciones
 
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionListener;
