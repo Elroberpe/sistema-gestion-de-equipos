@@ -20,6 +20,19 @@ import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.border.EmptyBorder;
 
+import Dao.EquipoDAO;
+import Dao.PrestamoDao;
+import Modelo.Equipo;
+import Modelo.Prestamo;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+
+import Dao.SolicitanteDao;
+import Modelo.Solicitante;
+
 public class PanelPrestamos extends JPanel {
 
     private static final long serialVersionUID = 1L;
@@ -611,4 +624,148 @@ public class PanelPrestamos extends JPanel {
     	table.getColumnModel().getColumn(4).setPreferredWidth(130);
     	table.getColumnModel().getColumn(5).setPreferredWidth(100);
     }
+    
+    private void configurarEventos() {
+
+        //BOTÓN CANCELAR — LIMPIA CAMPOS =====================================
+        btnCancelar.addActionListener(e -> {
+			        txtDniSolicitante.setText("Ingrese DNI");
+			        txtNombres.setText("");
+			        txtApellidos.setText("");
+			        txtArea.setText("");
+			        txtCodigoEquipo.setText("");
+			        txtDescripcion.setText("");
+			        txtMarcaModelo.setText("");
+			        txtEstadoActual.setText("");
+			        txtFechaPrestamo.setText("");
+			        txtFechaDevolucion.setText("");
+			        txtObservaciones.setText("");
+			        idSolicitanteSeleccionado = 0;
+			        idEquipoSeleccionado = 0;
+			        });
+
+        //BOTÓN BUSCAR EQUIPO =================================================
+        btnBuscarEquipo.addActionListener(e -> {
+			            String codigo = txtCodigoEquipo.getText().trim();
+			            if (codigo.isEmpty()) {
+			                JOptionPane.showMessageDialog(this, 
+			                    "Ingrese un código de equipo", 
+			                    "Aviso", JOptionPane.WARNING_MESSAGE);
+			            return;}
+			            
+			            EquipoDAO equipoDAO = new EquipoDAO();
+			            ArrayList<Equipo> lista = equipoDAO.buscarPorNombreOCodigo(codigo);
+			            if (lista.isEmpty()) {
+			                JOptionPane.showMessageDialog(this, 
+			                    "No se encontró ningún equipo", 
+			                    "Aviso", JOptionPane.WARNING_MESSAGE);}
+			            else {
+			                Equipo eq = lista.get(0);
+			                if (!eq.getEstado().equals("Disponible")) {
+			                    JOptionPane.showMessageDialog(this, 
+			                        "El equipo no está disponible", 
+			                        "Aviso", JOptionPane.WARNING_MESSAGE);
+			                return;}
+			                
+			                idEquipoSeleccionado = eq.getIdEquipo();
+			                txtDescripcion.setText(eq.getNombre());
+			                txtMarcaModelo.setText(eq.getMarca() + " / " + eq.getModelo());
+			                txtEstadoActual.setText(eq.getEstado());
+			            }});
+
+        //BOTÓN ACTUALIZAR TABLA ==============================================
+        btnActualizarTabla.addActionListener(e -> {cargarTabla();});
+
+        //BOTÓN REGISTRAR PRÉSTAMO ============================================
+        btnRegistrar.addActionListener(e -> {
+            
+		        	//VALIDACIONES
+		            if (idSolicitanteSeleccionado == 0) {JOptionPane.showMessageDialog(this, 
+		                "Debe seleccionar un solicitante", 
+		                "Aviso", JOptionPane.WARNING_MESSAGE);
+		            return;}
+		            
+		            if (idEquipoSeleccionado == 0) {JOptionPane.showMessageDialog(this, 
+		                "Debe seleccionar un equipo", 
+		                "Aviso", JOptionPane.WARNING_MESSAGE);
+		            return;}
+		            
+		            if (txtFechaPrestamo.getText().trim().isEmpty()) {JOptionPane.showMessageDialog(this, 
+		                "Ingrese la fecha de préstamo", 
+		                "Aviso", JOptionPane.WARNING_MESSAGE);
+		            return;}
+		            
+		            if (txtFechaDevolucion.getText().trim().isEmpty() || 
+		                txtFechaDevolucion.getText().equals("dd/mm/aaaa")) {JOptionPane.showMessageDialog(this, 
+		                "Ingrese la fecha de devolución", 
+		                "Aviso", JOptionPane.WARNING_MESSAGE);
+		            return;}
+            
+            try{DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //CONVERTIR FECHAS ---------------
+                LocalDate fechaPrestamo = LocalDate.parse(txtFechaPrestamo.getText().trim(), formatter);
+                LocalDate fechaDevolucion = LocalDate.parse(txtFechaDevolucion.getText().trim(), formatter);
+
+                //CREAR OBJETO PRESTAMO
+                Prestamo prestamo = new Prestamo();
+                prestamo.setIdEquipo(idEquipoSeleccionado);
+                prestamo.setIdSolicitante(idSolicitanteSeleccionado);
+                prestamo.setFechaPrestamo(fechaPrestamo);
+                prestamo.setHoraPrestamo(LocalTime.now());
+                prestamo.setFechaDevolucionPrevista(fechaDevolucion);
+                prestamo.setObservaciones(txtObservaciones.getText());
+                prestamo.setEstado("Activo");
+
+                //GUARDAR EN BASE DE DATOS ===============================================
+                PrestamoDao dao = new PrestamoDao();
+                
+                		if (dao.guardar(prestamo))
+                			{ EquipoDAO equipoDAO = new EquipoDAO();
+                			  equipoDAO.actualizarEstado(idEquipoSeleccionado, "Prestado"); //CAMBIAR EL ESTADO DEL EQUIPO A PRESTADO                  
+		                      JOptionPane.showMessageDialog(this, "Préstamo registrado correctamente", "Éxito",
+		                      JOptionPane.INFORMATION_MESSAGE);
+		                      btnCancelar.doClick(); //LIMPIA CAMPOS
+		                      cargarTabla();} //ACTUALIZA TABLA
+                      
+		                else {JOptionPane.showMessageDialog(this, "Error al registrar el préstamo", "Error", JOptionPane.ERROR_MESSAGE);}}
+            
+            catch (Exception ex) {JOptionPane.showMessageDialog(this, "Formato de fecha incorrecto. Use dd/mm/aaaa", "Error", JOptionPane.ERROR_MESSAGE);}});
+         
+        //BOTÓN BUSCAR SOLICITANTE ============================================
+        btnBuscarSolicitante.addActionListener(e -> {
+            String dni = txtDniSolicitante.getText().trim();
+            if (dni.isEmpty() || dni.equals("Ingrese DNI")) {
+                JOptionPane.showMessageDialog(this,
+                    "Ingrese un DNI para buscar",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            SolicitanteDao solicitanteDAO = new SolicitanteDao();
+            Solicitante s = solicitanteDAO.buscarPorDni(dni);
+            if (s == null) {
+                JOptionPane.showMessageDialog(this,
+                    "No se encontró ningún solicitante con ese DNI",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+            } else {
+                idSolicitanteSeleccionado = s.getIdSolicitante();
+                txtNombres.setText(s.getNombre());
+                txtApellidos.setText(s.getApellidos());
+                txtArea.setText(s.getTipo());
+            }});
+    }
+    
+    
+
+        //CARGAR TABLA ============================================================
+        private void cargarTabla()
+        	{modelo.setRowCount(0); //MILIA TABLA
+        	 PrestamoDao dao = new PrestamoDao();
+        	 ArrayList<Prestamo> lista = dao.listar();
+        	 for (Prestamo p : lista) {modelo.addRow(new Object[]{
+							                p.getIdPrestamo(),
+							                p.getIdSolicitante(), //PONER EL NOMBRE CUANDO TENGA SOLICITANTEDAO
+							                p.getIdEquipo(),      // cuando tengas EquipoDAO pon el código
+							                p.getFechaPrestamo(),
+							                p.getFechaDevolucionPrevista(),
+							                p.getEstado()});}
+        	}
 }
