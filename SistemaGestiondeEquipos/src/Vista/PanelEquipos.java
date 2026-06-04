@@ -14,6 +14,8 @@ import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
 
+import Dao.EquipoDAO;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,7 +24,6 @@ import java.awt.Font;
 import java.util.ArrayList;
 import javax.swing.border.EmptyBorder;
 
-import DAO.EquipoDAO;
 import Modelo.Equipo;
 
 public class PanelEquipos extends JPanel {
