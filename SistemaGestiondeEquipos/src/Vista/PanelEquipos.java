@@ -22,7 +22,7 @@ import java.awt.Font;
 import java.util.ArrayList;
 import javax.swing.border.EmptyBorder;
 
-import DAO.EquipoDAO;
+import Dao.EquipoDAO;
 import Modelo.Equipo;
 
 public class PanelEquipos extends JPanel {
