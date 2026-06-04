@@ -30,6 +30,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
+import Dao.SolicitanteDao;
+import Modelo.Solicitante;
+
 public class PanelPrestamos extends JPanel {
 
     private static final long serialVersionUID = 1L;
@@ -608,7 +611,31 @@ public class PanelPrestamos extends JPanel {
 		                else {JOptionPane.showMessageDialog(this, "Error al registrar el préstamo", "Error", JOptionPane.ERROR_MESSAGE);}}
             
             catch (Exception ex) {JOptionPane.showMessageDialog(this, "Formato de fecha incorrecto. Use dd/mm/aaaa", "Error", JOptionPane.ERROR_MESSAGE);}});
-         }
+         
+        //BOTÓN BUSCAR SOLICITANTE ============================================
+        btnBuscarSolicitante.addActionListener(e -> {
+            String dni = txtDniSolicitante.getText().trim();
+            if (dni.isEmpty() || dni.equals("Ingrese DNI")) {
+                JOptionPane.showMessageDialog(this,
+                    "Ingrese un DNI para buscar",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            SolicitanteDao solicitanteDAO = new SolicitanteDao();
+            Solicitante s = solicitanteDAO.buscarPorDni(dni);
+            if (s == null) {
+                JOptionPane.showMessageDialog(this,
+                    "No se encontró ningún solicitante con ese DNI",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+            } else {
+                idSolicitanteSeleccionado = s.getIdSolicitante();
+                txtNombres.setText(s.getNombre());
+                txtApellidos.setText(s.getApellidos());
+                txtArea.setText(s.getTipo());
+            }});
+    }
+    
+    
 
         //CARGAR TABLA ============================================================
         private void cargarTabla()
