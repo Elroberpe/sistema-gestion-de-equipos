@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import DAO.DevolucionDao;
 import DTO.PrestamoActivoDTO;
+import Modelo.Devolucion;
 
 
 public class DevolucionController {
@@ -28,5 +29,7 @@ public class DevolucionController {
 		devolucionDao.actualizarEstadoPrestamoVencidos();
 	}
 	
-	
+	public boolean registrarDevolucion(PrestamoActivoDTO prestamo , Devolucion devolucion) {
+		return devolucionDao.registrarDevolucion(prestamo, devolucion);
+	}
 }

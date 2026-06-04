@@ -19,6 +19,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -29,8 +30,7 @@ import javax.swing.table.DefaultTableModel;
 
 import Controller.DevolucionController;
 import DTO.PrestamoActivoDTO;
-
-
+import Modelo.Devolucion;
 
 import javax.swing.border.EmptyBorder;
 
@@ -49,7 +49,10 @@ public class PanelDevoluciones extends JPanel {
 	private JTextField txtDniSolicitante;
 	private JTextField txtCodigoEquipo; 
 	
+	private JTextArea txtObservacion;
+	
 	private JButton btnBuscar;
+	private JButton btnRegistrarDevolucion ;
 	
 	private DevolucionController devolucionController;
 	
@@ -419,7 +422,7 @@ public class PanelDevoluciones extends JPanel {
 
         panelContenidoRecepcion.add(lblObservacion, gbcLblObservacion);
         
-        JTextArea txtObservacion = new JTextArea("Ingrese detalles sobre el estado del equipo al recibirlo, faltantes o incidencias...");
+        txtObservacion = new JTextArea("Ingrese detalles sobre el estado del equipo al recibirlo, faltantes o incidencias...");
         txtObservacion.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtObservacion.setRows(4);
         txtObservacion.setLineWrap(true);
@@ -492,13 +495,18 @@ public class PanelDevoluciones extends JPanel {
 
         panelContenidoRecepcion.add(btnCancelar, gbcBtnCancelar);
         
-        JButton btnRegistrarDevolucion = new JButton("Registrar Devolución");
+        btnRegistrarDevolucion = new JButton("Registrar Devolución");
         btnRegistrarDevolucion.setPreferredSize(new Dimension(170, 34));
         btnRegistrarDevolucion.setBackground(new Color(25, 118, 210));
         btnRegistrarDevolucion.setForeground(Color.WHITE);
         btnRegistrarDevolucion.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btnRegistrarDevolucion.setFocusPainted(false);
         btnRegistrarDevolucion.setBorderPainted(false);
+        
+        btnRegistrarDevolucion.addActionListener(e -> {
+            registrarDevolucion();
+            listarPrestamosActivos();
+        });
 
         GridBagConstraints gbcBtnRegistrarDevolucion = new GridBagConstraints();
         gbcBtnRegistrarDevolucion.gridx = 3;
@@ -516,54 +524,8 @@ public class PanelDevoluciones extends JPanel {
     	devolucionController.actualizarEstadoPrestamosVencidos();
     	
     	ArrayList<PrestamoActivoDTO> lista = devolucionController.listarPrestamosActivos();
-    	DefaultTableModel modelo = new DefaultTableModel(
-    			new Object[][] {},
-    			new String[] {
-    					"ID", "Solicitante","Dni", "Equipo", "Fecha Préstamo", "Fecha Límite" , "Estado"
-    			}
-    			
-    			) {
-    		
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-    	};
     	
-    	for(PrestamoActivoDTO p : lista) {
-    		Object[] fila = {
-    				p.getIdPrestamo(),
-    				p.getSolicitante(),
-    				p.getdni(),
-    				p.getNombreEquipo(),
-    				p.getFechaPrestamo(),
-    				p.getFechaDevolucionPrevista(),
-    				p.getEstadoPrestamo()
-    		};
-    		modelo.addRow(fila);
-    	}
-    		tablePrestamos.setModel(modelo);
-    		
-    		//Ocultar DNI
-    		
-    		tablePrestamos.getColumnModel().getColumn(2).setMinWidth(0);
-    		tablePrestamos.getColumnModel().getColumn(2).setMaxWidth(0);
-    		tablePrestamos.getColumnModel().getColumn(2).setPreferredWidth(0);
-    		
-    		//Ocultar estado 
-    		tablePrestamos.getColumnModel().getColumn(6).setMinWidth(0);
-    		tablePrestamos.getColumnModel().getColumn(6).setMaxWidth(0);
-    		tablePrestamos.getColumnModel().getColumn(6).setPreferredWidth(0);
-    		
-    	    // Tamaños de columnas visibles
-    	    tablePrestamos.getColumnModel().getColumn(0).setPreferredWidth(80);
-    	    tablePrestamos.getColumnModel().getColumn(1).setPreferredWidth(180);
-    	    tablePrestamos.getColumnModel().getColumn(3).setPreferredWidth(300);
-    	    tablePrestamos.getColumnModel().getColumn(4).setPreferredWidth(130);
-    	    tablePrestamos.getColumnModel().getColumn(5).setPreferredWidth(130);
-    	
+    	cargarTablaPrestamo(lista);
     }
     
     private void mostrarDetallePrestamoSeleccionado() {
@@ -662,7 +624,6 @@ public class PanelDevoluciones extends JPanel {
     		tablePrestamos.setModel(modelo);
     		
     		//Ocultar DNI
-    		
     		tablePrestamos.getColumnModel().getColumn(2).setMinWidth(0);
     		tablePrestamos.getColumnModel().getColumn(2).setMaxWidth(0);
     		tablePrestamos.getColumnModel().getColumn(2).setPreferredWidth(0);
@@ -678,5 +639,42 @@ public class PanelDevoluciones extends JPanel {
     	    tablePrestamos.getColumnModel().getColumn(3).setPreferredWidth(300);
     	    tablePrestamos.getColumnModel().getColumn(4).setPreferredWidth(130);
     	    tablePrestamos.getColumnModel().getColumn(5).setPreferredWidth(130);
+    }
+    
+    
+    private void registrarDevolucion() {
+    	int fila = tablePrestamos.getSelectedRow();
+    	
+    	if(fila == -1) {
+    		JOptionPane.showMessageDialog(null,"Debe elegir un prestamo para registrar devolucion");
+    		return ;
+    	}
+    	
+    	int filaModelo = tablePrestamos.convertRowIndexToModel(fila);
+    	DefaultTableModel modelo = (DefaultTableModel) tablePrestamos.getModel();
+    	
+    	String idPrestamo = modelo.getValueAt(filaModelo, 0).toString();
+    	String observacion = txtObservacion.getText().trim();
+    	
+    	ArrayList<PrestamoActivoDTO> listaPrestamos = devolucionController.buscarPrestamoActivos(idPrestamo, "", "");
+    	
+    	if (listaPrestamos.isEmpty()) {
+    		JOptionPane.showMessageDialog(null, "No hay prestamos activos");
+    		return;
+    	}
+    	
+    	PrestamoActivoDTO prestamoSeleccionado = listaPrestamos.get(0);
+    	
+    	Devolucion devolucion = new Devolucion(Integer.parseInt(idPrestamo),observacion);
+    	
+    
+    	boolean registrado = devolucionController.registrarDevolucion(prestamoSeleccionado, devolucion);
+    	
+    	if(registrado) {
+    		JOptionPane.showMessageDialog(btnBuscar, "Devolucion registrada correctamente");
+    	} else {
+    		JOptionPane.showMessageDialog(null, "No se pudo registrar la devolucion");
+    	}
+    	
     }
 }
