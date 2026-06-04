@@ -31,7 +31,6 @@ import javax.swing.table.DefaultTableModel;
 import Controller.DevolucionController;
 import DTO.PrestamoActivoDTO;
 import Modelo.Devolucion;
-import DAO.DevolucionDao;
 
 import javax.swing.border.EmptyBorder;
 

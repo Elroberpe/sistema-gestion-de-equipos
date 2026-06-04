@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 
 import Conexion.Conexion;
 import DTO.PrestamoActivoDTO;
+import Modelo.Devolucion;
 
 public class DevolucionDao {
 
@@ -163,10 +164,92 @@ public class DevolucionDao {
 			
 		}
 
-		
-		public boolean registrarDevolucion(int idPrestamo, int idEquipo, String estadoEquipo, String observacion) {
+	
+		public void actualizarEstadoPrestamoVencidos() {
 			
-			return true;
+			String consulta = """
+					UPDATE Prestamo 
+					SET Estado = 'Vencido'
+					WHERE Estado = 'Activo' AND FechaDevolucionPrevista < CAST(GETDATE () as DATE)
+					""";
+			try (
+				Connection con = Conexion.getConexion();
+				PreparedStatement ps = con.prepareStatement(consulta)
+					){		
+				ps.executeUpdate();		
+			}
+			
+			catch (SQLException e) {
+				System.out.println("Error al actualizar prestamos vencidos: " + e.getMessage());
+			}
+			
+					
+		}
+		
+		public boolean registrarDevolucion(PrestamoActivoDTO prestamo , Devolucion devolucion) {
+			
+			String consultaInsertarDevolucion = """
+					INSERT INTO Devolucion 
+					(idPrestamo, FechaDevolucion, HoraDevolucion,Observacion)
+					VALUES
+					(?,CAST(GETDATE() AS DATE), CAST(GETDATE() AS TIME (0)), ?)
+					""";
+			String consultaCambiarEstadoPrestamo = """
+					UPDATE Prestamo
+					SET Estado = 'Devuelto'
+					WHERE IdPrestamo = ?
+					""";
+			String consultaCambiarEstadoEquio = """
+					UPDATE Equipo
+					SET estado = 'Disponible'
+					WHERE idEquipo = ?;
+					""";
+			
+			Connection con = null;
+			
+			try{
+				con = Conexion.getConexion();
+				
+				con.setAutoCommit(false);
+				
+				PreparedStatement psDevolucion = con.prepareStatement(consultaInsertarDevolucion);
+				psDevolucion.setInt(1, devolucion.getIdPrestamo());
+				psDevolucion.setString(2, devolucion.getObservacion());
+				psDevolucion.executeUpdate();
+				
+				PreparedStatement psPrestamo = con.prepareStatement(consultaCambiarEstadoPrestamo);
+				psPrestamo.setInt(1, prestamo.getIdPrestamo());
+				psPrestamo.executeUpdate();
+				
+				PreparedStatement psEquipo = con.prepareStatement(consultaCambiarEstadoEquio);
+				psEquipo.setInt(1, prestamo.getIdEquipo());
+				psPrestamo.executeUpdate();
+				
+				con.commit();
+				return true;
+				
+			} catch (SQLException e) {
+		        try {
+		            if (con != null) {
+		                con.rollback();
+		            }
+		        } catch (SQLException ex) {
+		            System.out.println("Error al hacer rollback: " + ex.getMessage());
+		        }
+
+		        System.out.println("Error al registrar devolución: " + e.getMessage());
+		        return false;
+
+		    } finally {
+		        try {
+		            if (con != null) {
+		                con.setAutoCommit(true);
+		                con.close();
+		            }
+		        } catch (SQLException e) {
+		            System.out.println("Error al cerrar conexión: " + e.getMessage());
+		        }
+		    }
 		}
 	
 	
