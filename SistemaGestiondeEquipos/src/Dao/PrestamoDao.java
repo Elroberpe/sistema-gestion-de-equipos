@@ -28,7 +28,7 @@ public class PrestamoDao {
 		 }
 
 	
-	// LISTAR PRÉSTAMOS =================================================================================================================================================================
+	//LISTAR PRÉSTAMOS =================================================================================================================================================================
 	public ArrayList<Prestamo> listar()
 		 { ArrayList<Prestamo> lista = new ArrayList<>();
 		   String sql = "SELECT * FROM Prestamo";
@@ -52,7 +52,7 @@ public class PrestamoDao {
 		 }
 
 	
-	// ACTUALIZAR PRÉSTAMO ==============================================================================================================================================================
+	//ACTUALIZAR PRÉSTAMO ==============================================================================================================================================================
 	public boolean actualizar(Prestamo prestamo)
 		 { String sql = "UPDATE Prestamo SET IdEquipo=?, IdSolicitante=?, FechaPrestamo=?, HoraPrestamo=?, FechaDevolucionPrevista=?, Observaciones=?, "
 				 	 + "Estado=? WHERE IdPrestamo=?";
@@ -74,7 +74,7 @@ public class PrestamoDao {
 		 }
 
 	
-	// ELIMINAR PRÉSTAMO ================================================================================================================================================================
+	//ELIMINAR PRÉSTAMO ================================================================================================================================================================
 	public boolean eliminar(int idPrestamo)
 		 { String sql = "DELETE FROM Prestamo WHERE IdPrestamo=?";
 		   try {Connection con = Conexion.getConexion();
@@ -88,7 +88,7 @@ public class PrestamoDao {
 		 }
 
 
-	// BUSCAR PRÉSTAMO ==================================================================================================================================================================
+	//BUSCAR PRÉSTAMO ==================================================================================================================================================================
 	public ArrayList<Prestamo> buscar(String texto)
 		 { ArrayList<Prestamo> lista = new ArrayList<>();
 		   String sql = "SELECT * FROM Prestamo WHERE " +
@@ -123,7 +123,7 @@ public class PrestamoDao {
 	     }
 
 
-	// VERIFICAR SI EQUIPO TIENE PRÉSTAMO ACTIVO ========================================================================================================================================
+	//VERIFICAR SI EQUIPO TIENE PRÉSTAMO ACTIVO ========================================================================================================================================
 	public boolean tienePrestamoActivo(int idEquipo)
 		 {String sql = "SELECT COUNT(*) FROM Prestamo WHERE " +
 		                "IdEquipo=? AND Estado='Activo'";
@@ -138,7 +138,7 @@ public class PrestamoDao {
 		 }
 
 
-	// ANULAR PRÉSTAMO ==================================================================================================================================================================
+	//ANULAR PRÉSTAMO ==================================================================================================================================================================
 	public boolean anularPrestamo(int idPrestamo)
 		 { String sql = "UPDATE Prestamo SET Estado='Anulado' " +
 		                "WHERE IdPrestamo=?";
