@@ -637,17 +637,39 @@ public class PanelPrestamos extends JPanel {
     
     
 
-        //CARGAR TABLA ============================================================
-        private void cargarTabla()
-        	{modelo.setRowCount(0); //MILIA TABLA
-        	 PrestamoDao dao = new PrestamoDao();
-        	 ArrayList<Prestamo> lista = dao.listar();
-        	 for (Prestamo p : lista) {modelo.addRow(new Object[]{
-							                p.getIdPrestamo(),
-							                p.getIdSolicitante(), //PONER EL NOMBRE CUANDO TENGA SOLICITANTEDAO
-							                p.getIdEquipo(),      // cuando tengas EquipoDAO pon el código
-							                p.getFechaPrestamo(),
-							                p.getFechaDevolucionPrevista(),
-							                p.getEstado()});}
-        	}
+  //CARGAR TABLA ============================================================
+    private void cargarTabla()
+    	{modelo.setRowCount(0);
+    	 PrestamoDao prestamoDAO = new PrestamoDao();
+    	 EquipoDAO equipoDAO = new EquipoDAO();
+    	 SolicitanteDao solicitanteDAO = new SolicitanteDao();
+    	 
+    	 ArrayList<Equipo> equipos = equipoDAO.listar();
+    	 ArrayList<Solicitante> solicitantes = solicitanteDAO.listar();
+    	 ArrayList<Prestamo> prestamos = prestamoDAO.listar();
+    	 
+    	 for (Prestamo p : prestamos)
+    		 //BUSCAR NOMBRE DE EQUIPO ---------------------------------------------------------------
+    	 	 {String codigoEquipo = String.valueOf(p.getIdEquipo());
+    	       		 for (Equipo eq : equipos) {
+    	        		 if (eq.getIdEquipo() == p.getIdEquipo()) {
+    	        			 codigoEquipo = eq.getCodigo() + " - " + eq.getNombre();
+    	        		 break;}}
+    	        						  
+    	      //BUSCAR NOMBRE DE SOLICITANTE ---------------------------------------------------------------   						  
+    	      String nombreSolicitante = String.valueOf(p.getIdSolicitante());
+    	             for (Solicitante s : solicitantes) {
+    	                  if (s.getIdSolicitante() == p.getIdSolicitante()) {
+    	                      nombreSolicitante = s.getNombre() + " " + s.getApellidos();
+    	                  break;}}					  
+    	       		 
+			  modelo.addRow(new Object[]{
+				     p.getIdPrestamo(),
+				     nombreSolicitante,
+				     codigoEquipo,
+				     p.getFechaPrestamo(),
+				     p.getFechaDevolucionPrevista(),
+				     p.getEstado()});
+			  }
+    	}
 }
