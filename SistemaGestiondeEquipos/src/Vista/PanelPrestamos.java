@@ -30,6 +30,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
+
+
 public class PanelPrestamos extends JPanel {
 
     private static final long serialVersionUID = 1L;
@@ -140,7 +142,7 @@ public class PanelPrestamos extends JPanel {
     	gbcLblDni.insets = new Insets(5, 5, 5, 5);
     	panelBuscarSolicitante.add(lblDniSolicitante, gbcLblDni);
 
-    	// SIN TIPO — ya es atributo
+    	// SIN TIPO — VA ES ATRIBUTO
     	txtDniSolicitante = new JTextField("Ingrese DNI");
     	txtDniSolicitante.setPreferredSize(new Dimension(0, 32));
     	txtDniSolicitante.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -608,19 +610,31 @@ public class PanelPrestamos extends JPanel {
 		                else {JOptionPane.showMessageDialog(this, "Error al registrar el préstamo", "Error", JOptionPane.ERROR_MESSAGE);}}
             
             catch (Exception ex) {JOptionPane.showMessageDialog(this, "Formato de fecha incorrecto. Use dd/mm/aaaa", "Error", JOptionPane.ERROR_MESSAGE);}});
+        
+
+        
+        
+        
          }
 
         //CARGAR TABLA ============================================================
         private void cargarTabla()
-        	{modelo.setRowCount(0); //MILIA TABLA
-        	 PrestamoDao dao = new PrestamoDao();
-        	 ArrayList<Prestamo> lista = dao.listar();
-        	 for (Prestamo p : lista) {modelo.addRow(new Object[]{
-							                p.getIdPrestamo(),
-							                p.getIdSolicitante(), //PONER EL NOMBRE CUANDO TENGA SOLICITANTEDAO
-							                p.getIdEquipo(),      // cuando tengas EquipoDAO pon el código
-							                p.getFechaPrestamo(),
-							                p.getFechaDevolucionPrevista(),
-							                p.getEstado()});}
+        	{modelo.setRowCount(0);
+        	 PrestamoDao prestamoDAO = new PrestamoDao();
+        	 EquipoDAO equipoDAO = new EquipoDAO();
+        	 ArrayList<Equipo> equipos = equipoDAO.listar();
+        	 ArrayList<Prestamo> lista = prestamoDAO.listar();
+        	 for (Prestamo p : lista) {String codigoEquipo = String.valueOf(p.getIdEquipo()); //BUSCAR NOMBRE DE EQUIPO
+        	        						  for (Equipo eq : equipos) {
+        	        							   if (eq.getIdEquipo() == p.getIdEquipo()) {
+        	        								   codigoEquipo = eq.getCodigo() + " - " + eq.getNombre();
+        	        								   break;}}
+					        	        modelo.addRow(new Object[]{
+					        	             p.getIdPrestamo(),
+					        	             p.getIdSolicitante(),
+					        	             codigoEquipo,
+					        	             p.getFechaPrestamo(),
+					        	             p.getFechaDevolucionPrevista(),
+					        	             p.getEstado()});}
         	}
 }
