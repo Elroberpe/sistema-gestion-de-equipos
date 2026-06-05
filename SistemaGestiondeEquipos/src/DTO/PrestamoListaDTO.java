@@ -15,11 +15,10 @@ public class PrestamoListaDTO {
     //CONSTRUCTOR VACIO ===========================================================================================================
     public PrestamoListaDTO() {}
 
-    //CONSTRUCTOR =================================================================================================================
+    //GET Y SET ===================================================================================================================
     public int getIdPrestamo() { return idPrestamo; }
     public void setIdPrestamo(int idPrestamo) { this.idPrestamo = idPrestamo; }
 
-    //GET Y SET =================================================================================================================
     public String getNombreSolicitante() { return nombreSolicitante; }
     public void setNombreSolicitante(String n) { this.nombreSolicitante = n; }
 
