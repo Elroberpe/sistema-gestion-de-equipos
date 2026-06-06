@@ -382,7 +382,7 @@ public class PanelPrestamos extends JPanel {
     	gbcLblObservaciones.insets = new Insets(5, 5, 5, 5);
     	panelDetalle.add(lblObservaciones, gbcLblObservaciones);
     	
-    	txtFechaPrestamo = new JTextField("25/10/2023");
+    	txtFechaPrestamo = new JTextField("dd/mm/aaaa");
     	txtFechaPrestamo.setPreferredSize(new Dimension(0, 32));
     	txtFechaPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
     	txtFechaPrestamo.setForeground(Color.GRAY); 
