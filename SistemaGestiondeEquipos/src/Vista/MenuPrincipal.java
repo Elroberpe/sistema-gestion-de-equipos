@@ -171,6 +171,7 @@ public class MenuPrincipal extends JFrame {
 		btnPrestamos.addActionListener(e -> {
 		    mostrarPanel("PRESTAMOS");
 		    seleccionarBoton(btnPrestamos);
+		    panelPrestamos.actualizarTabla();
 		});
 
 		btnDevoluciones.addActionListener(e -> {
