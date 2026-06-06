@@ -147,6 +147,7 @@ public class PanelPrestamos extends JPanel {
     	txtDniSolicitante = new JTextField("Ingrese DNI");
     	txtDniSolicitante.setPreferredSize(new Dimension(0, 32));
     	txtDniSolicitante.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    	txtDniSolicitante.setForeground(Color.GRAY); 
     	GridBagConstraints gbcTxtDni = new GridBagConstraints();
     	gbcTxtDni.gridx = 0; gbcTxtDni.gridy = 3; gbcTxtDni.gridwidth = 2;
     	gbcTxtDni.weightx = 1; gbcTxtDni.fill = GridBagConstraints.HORIZONTAL;
@@ -384,6 +385,7 @@ public class PanelPrestamos extends JPanel {
     	txtFechaPrestamo = new JTextField("25/10/2023");
     	txtFechaPrestamo.setPreferredSize(new Dimension(0, 32));
     	txtFechaPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    	txtFechaPrestamo.setForeground(Color.GRAY); 
     	txtFechaPrestamo.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
     	GridBagConstraints gbcTxtFechaPrestamo = new GridBagConstraints();
     	gbcTxtFechaPrestamo.gridx = 0; gbcTxtFechaPrestamo.gridy = 3; gbcTxtFechaPrestamo.gridwidth = 1;
@@ -394,6 +396,7 @@ public class PanelPrestamos extends JPanel {
     	txtFechaDevolucion = new JTextField("dd/mm/aaaa");
     	txtFechaDevolucion.setPreferredSize(new Dimension(0, 32));
     	txtFechaDevolucion.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    	txtFechaDevolucion.setForeground(Color.GRAY);
     	txtFechaDevolucion.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
     	GridBagConstraints gbcTxtFechaDevolucion = new GridBagConstraints();
     	gbcTxtFechaDevolucion.gridx = 1; gbcTxtFechaDevolucion.gridy = 3; gbcTxtFechaDevolucion.gridwidth = 1;
@@ -505,6 +508,53 @@ public class PanelPrestamos extends JPanel {
     	
     	// EVENTOS DE BOTONES =================================================
     	configurarEventos();
+    	// PLACEHOLDER txtDniSolicitante
+    	txtDniSolicitante.addFocusListener(new java.awt.event.FocusAdapter() {
+    	    public void focusGained(java.awt.event.FocusEvent e) {
+    	        if (txtDniSolicitante.getText().equals("Ingrese DNI")) {
+    	            txtDniSolicitante.setText("");
+    	            txtDniSolicitante.setForeground(Color.BLACK);
+    	        }
+    	    }
+    	    public void focusLost(java.awt.event.FocusEvent e) {
+    	        if (txtDniSolicitante.getText().isEmpty()) {
+    	            txtDniSolicitante.setText("Ingrese DNI");
+    	            txtDniSolicitante.setForeground(Color.GRAY);
+    	        }
+    	    }
+    	});
+
+    	// PLACEHOLDER txtFechaPrestamo
+    	txtFechaPrestamo.addFocusListener(new java.awt.event.FocusAdapter() {
+    	    public void focusGained(java.awt.event.FocusEvent e) {
+    	        if (txtFechaPrestamo.getText().equals("25/10/2023")) {
+    	            txtFechaPrestamo.setText("");
+    	            txtFechaPrestamo.setForeground(Color.BLACK);
+    	        }
+    	    }
+    	    public void focusLost(java.awt.event.FocusEvent e) {
+    	        if (txtFechaPrestamo.getText().isEmpty()) {
+    	            txtFechaPrestamo.setText("25/10/2023");
+    	            txtFechaPrestamo.setForeground(Color.GRAY);
+    	        }
+    	    }
+    	});
+
+    	// PLACEHOLDER txtFechaDevolucion
+    	txtFechaDevolucion.addFocusListener(new java.awt.event.FocusAdapter() {
+    	    public void focusGained(java.awt.event.FocusEvent e) {
+    	        if (txtFechaDevolucion.getText().equals("dd/mm/aaaa")) {
+    	            txtFechaDevolucion.setText("");
+    	            txtFechaDevolucion.setForeground(Color.BLACK);
+    	        }
+    	    }
+    	    public void focusLost(java.awt.event.FocusEvent e) {
+    	        if (txtFechaDevolucion.getText().isEmpty()) {
+    	            txtFechaDevolucion.setText("dd/mm/aaaa");
+    	            txtFechaDevolucion.setForeground(Color.GRAY);
+    	        }
+    	    }
+    	});
     }
     
     private void configurarEventos() {
@@ -672,4 +722,9 @@ public class PanelPrestamos extends JPanel {
 				     p.getEstado()});
 			  }
     	}
+    
+    public void actualizarTabla() {
+        cargarTabla();
+    }
+    
 }
