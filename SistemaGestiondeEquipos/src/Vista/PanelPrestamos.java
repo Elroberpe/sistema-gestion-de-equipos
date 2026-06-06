@@ -245,7 +245,7 @@ public class PanelPrestamos extends JPanel {
     	gbcLblCodigoEquipo.insets = new Insets(5, 5, 5, 5);
     	panelBuscarEquipo.add(lblCodigoEquipo, gbcLblCodigoEquipo);
 
-    	txtCodigoEquipo = new JTextField("Ingreso Código");
+    	txtCodigoEquipo = new JTextField("Ingrese Código");
     	txtCodigoEquipo.setPreferredSize(new Dimension(0, 32));
     	txtCodigoEquipo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
     	txtCodigoEquipo.setForeground(Color.GRAY); 
