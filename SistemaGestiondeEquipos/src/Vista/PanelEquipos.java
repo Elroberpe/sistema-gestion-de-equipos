@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
 
-import Dao.EquipoDAO;
+import Controller.EquipoController;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -34,14 +34,13 @@ public class PanelEquipos extends JPanel {
     private JComboBox<String> cboTipo, cboEstado;
     private JTable table;
     private DefaultTableModel modelo;
-    private EquipoDAO equipoDAO = new EquipoDAO();
+    private EquipoController equipoController = new EquipoController();
     private int idEquipoSeleccionado = -1;
 
     public PanelEquipos() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 247, 250));
 
-        // PANEL TÍTULO
         JPanel panelTitulo = new JPanel();
         panelTitulo.setBorder(new MatteBorder(0, 0, 1, 0, new Color(220, 220, 220)));
         panelTitulo.setBackground(Color.WHITE);
@@ -55,7 +54,6 @@ public class PanelEquipos extends JPanel {
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 0));
         panelTitulo.add(lblTitulo, BorderLayout.CENTER);
 
-        // PANEL PRINCIPAL
         JPanel panelPrincipal = new JPanel();
         panelPrincipal.setLayout(new BorderLayout(16, 0));
         panelPrincipal.setBackground(new Color(245, 247, 250));
@@ -68,7 +66,6 @@ public class PanelEquipos extends JPanel {
         scrollPrincipal.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(scrollPrincipal, BorderLayout.CENTER);
 
-        // PANEL FORMULARIO
         JPanel panelFormulario = new JPanel();
         panelFormulario.setPreferredSize(new Dimension(310, 590));
         panelFormulario.setBackground(Color.WHITE);
@@ -159,8 +156,6 @@ public class PanelEquipos extends JPanel {
         panelFormulario.add(lblEstado);
 
         cboEstado = new JComboBox<>();
-        cboEstado.setModel(new DefaultComboBoxModel<>(
-                new String[]{"Disponible", "Prestado", "Mantenimiento", "Baja"}));
         cboEstado.setBounds(16, 425, 278, 32);
         cboEstado.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         panelFormulario.add(cboEstado);
@@ -192,14 +187,12 @@ public class PanelEquipos extends JPanel {
         btnEliminar.setBorderPainted(false);
         panelFormulario.add(btnEliminar);
 
-        // PANEL TABLA
         JPanel panelTabla = new JPanel();
         panelTabla.setBackground(Color.WHITE);
         panelTabla.setBorder(BorderFactory.createLineBorder(new Color(210, 215, 220)));
         panelTabla.setLayout(new BorderLayout());
         panelPrincipal.add(panelTabla, BorderLayout.CENTER);
 
-        // PANEL BUSCADOR
         JPanel panelBuscar = new JPanel();
         panelBuscar.setBackground(Color.WHITE);
         panelBuscar.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
@@ -237,7 +230,6 @@ public class PanelEquipos extends JPanel {
         panelAcciones.add(btnActualizar);
         panelBuscar.add(panelAcciones, BorderLayout.EAST);
 
-        // TABLA
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         panelTabla.add(scrollPane, BorderLayout.CENTER);
@@ -253,7 +245,6 @@ public class PanelEquipos extends JPanel {
         table = new JTable(modelo);
         scrollPane.setViewportView(table);
 
-        // Ocultar columna ID
         table.getColumnModel().getColumn(0).setMinWidth(0);
         table.getColumnModel().getColumn(0).setMaxWidth(0);
         table.getColumnModel().getColumn(0).setPreferredWidth(0);
@@ -270,24 +261,48 @@ public class PanelEquipos extends JPanel {
         table.getTableHeader().setPreferredSize(new Dimension(0, 36));
         table.getTableHeader().setReorderingAllowed(false);
 
-        // ACCIONES BOTONES
         btnGuardar.addActionListener(e -> guardarEquipo());
         btnLimpiar.addActionListener(e -> limpiarCampos());
         btnEliminar.addActionListener(e -> eliminarEquipo());
         btnFiltrar.addActionListener(e -> buscarEquipo());
         btnActualizar.addActionListener(e -> cargarTabla());
 
-        // Seleccionar fila
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) cargarFormulario();
         });
 
+        actualizarComboEstado("Disponible");
         cargarTabla();
+    }
+
+    private void actualizarComboEstado(String estadoActual) {
+        cboEstado.removeAllItems();
+        switch (estadoActual) {
+            case "Disponible":
+                cboEstado.addItem("Disponible");
+                cboEstado.addItem("Mantenimiento");
+                cboEstado.addItem("Baja");
+                break;
+            case "Mantenimiento":
+                cboEstado.addItem("Mantenimiento");
+                cboEstado.addItem("Disponible");
+                cboEstado.addItem("Baja");
+                break;
+            case "Prestado":
+                cboEstado.addItem("Prestado");
+                cboEstado.setEnabled(false);
+                break;
+            default:
+                cboEstado.addItem("Disponible");
+                cboEstado.addItem("Mantenimiento");
+                cboEstado.addItem("Baja");
+        }
+        cboEstado.setEnabled(!estadoActual.equals("Prestado"));
     }
 
     private void cargarTabla() {
         modelo.setRowCount(0);
-        ArrayList<Equipo> lista = equipoDAO.listar();
+        ArrayList<Equipo> lista = equipoController.listar();
         for (Equipo eq : lista) {
             modelo.addRow(new Object[]{
                 eq.getIdEquipo(), eq.getCodigo(), eq.getNombre(),
@@ -317,14 +332,15 @@ public class PanelEquipos extends JPanel {
         eq.setEstado(cboEstado.getSelectedItem().toString());
 
         if (idEquipoSeleccionado == -1) {
-            if (equipoDAO.guardar(eq)) {
+            eq.setEstado("Disponible");
+            if (equipoController.guardar(eq)) {
                 JOptionPane.showMessageDialog(this, "Equipo guardado correctamente.");
             } else {
                 JOptionPane.showMessageDialog(this, "Error al guardar.");
             }
         } else {
             eq.setIdEquipo(idEquipoSeleccionado);
-            if (equipoDAO.actualizar(eq)) {
+            if (equipoController.actualizar(eq)) {
                 JOptionPane.showMessageDialog(this, "Equipo actualizado correctamente.");
             } else {
                 JOptionPane.showMessageDialog(this, "Error al actualizar.");
@@ -342,7 +358,7 @@ public class PanelEquipos extends JPanel {
         int confirm = JOptionPane.showConfirmDialog(this,
                 "¿Estás seguro de eliminar este equipo?", "Confirmar", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            if (equipoDAO.eliminar(idEquipoSeleccionado)) {
+            if (equipoController.eliminar(idEquipoSeleccionado)) {
                 JOptionPane.showMessageDialog(this, "Equipo eliminado.");
                 limpiarCampos();
                 cargarTabla();
@@ -359,7 +375,7 @@ public class PanelEquipos extends JPanel {
             return;
         }
         modelo.setRowCount(0);
-        ArrayList<Equipo> lista = equipoDAO.buscarPorNombreOCodigo(texto);
+        ArrayList<Equipo> lista = equipoController.buscarPorNombreOCodigo(texto);
         for (Equipo eq : lista) {
             modelo.addRow(new Object[]{
                 eq.getIdEquipo(), eq.getCodigo(), eq.getNombre(),
@@ -379,7 +395,8 @@ public class PanelEquipos extends JPanel {
         txtMarca.setText(modelo.getValueAt(fila, 4).toString());
         txtModelo.setText(modelo.getValueAt(fila, 5) != null ? modelo.getValueAt(fila, 5).toString() : "");
         txtSerie.setText(modelo.getValueAt(fila, 6) != null ? modelo.getValueAt(fila, 6).toString() : "");
-        cboEstado.setSelectedItem(modelo.getValueAt(fila, 7).toString());
+        String estadoActual = modelo.getValueAt(fila, 7).toString();
+        actualizarComboEstado(estadoActual);
     }
 
     private void limpiarCampos() {
@@ -390,7 +407,7 @@ public class PanelEquipos extends JPanel {
         txtModelo.setText("");
         txtSerie.setText("");
         cboTipo.setSelectedIndex(0);
-        cboEstado.setSelectedIndex(0);
+        actualizarComboEstado("Disponible");
         table.clearSelection();
     }
 }
