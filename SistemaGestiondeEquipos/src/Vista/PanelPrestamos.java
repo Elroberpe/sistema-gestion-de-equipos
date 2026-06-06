@@ -245,9 +245,10 @@ public class PanelPrestamos extends JPanel {
     	gbcLblCodigoEquipo.insets = new Insets(5, 5, 5, 5);
     	panelBuscarEquipo.add(lblCodigoEquipo, gbcLblCodigoEquipo);
 
-    	txtCodigoEquipo = new JTextField();
+    	txtCodigoEquipo = new JTextField("Ingreso Código");
     	txtCodigoEquipo.setPreferredSize(new Dimension(0, 32));
     	txtCodigoEquipo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    	txtCodigoEquipo.setForeground(Color.GRAY); 
     	txtCodigoEquipo.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
     	GridBagConstraints gbcTxtCodigoEquipo = new GridBagConstraints();
     	gbcTxtCodigoEquipo.gridx = 0; gbcTxtCodigoEquipo.gridy = 3; gbcTxtCodigoEquipo.gridwidth = 2;
@@ -520,6 +521,22 @@ public class PanelPrestamos extends JPanel {
     	        if (txtDniSolicitante.getText().isEmpty()) {
     	            txtDniSolicitante.setText("Ingrese DNI");
     	            txtDniSolicitante.setForeground(Color.GRAY);
+    	        }
+    	    }
+    	});
+    	
+    	// PLACEHOLDER txtCodigoEquipo
+    	txtCodigoEquipo .addFocusListener(new java.awt.event.FocusAdapter() {
+    	    public void focusGained(java.awt.event.FocusEvent e) {
+    	        if (txtCodigoEquipo .getText().equals("Ingrese Código")) {
+    	        	txtCodigoEquipo .setText("");
+    	        	txtCodigoEquipo .setForeground(Color.BLACK);
+    	        }
+    	    }
+    	    public void focusLost(java.awt.event.FocusEvent e) {
+    	        if (txtCodigoEquipo .getText().isEmpty()) {
+    	        	txtCodigoEquipo .setText("Ingrese Código");
+    	        	txtCodigoEquipo .setForeground(Color.GRAY);
     	        }
     	    }
     	});
