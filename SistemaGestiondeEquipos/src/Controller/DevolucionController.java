@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import DTO.PrestamoActivoDTO;
 import Dao.DevolucionDao;
+import Modelo.Devolucion;
+
 
 public class DevolucionController {
 	private DevolucionDao devolucionDao;
@@ -23,5 +25,11 @@ public class DevolucionController {
 		return devolucionDao.buscarPrestamoActivo(idPrestamo, dni, codigoEquipoi);
 	}
 	
+	public void actualizarEstadoPrestamosVencidos() {
+		devolucionDao.actualizarEstadoPrestamoVencidos();
+	}
 	
+	public boolean registrarDevolucion(PrestamoActivoDTO prestamo , Devolucion devolucion) {
+		return devolucionDao.registrarDevolucion(prestamo, devolucion);
+	}
 }
