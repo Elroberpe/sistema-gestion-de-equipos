@@ -4,6 +4,11 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry excluding="lib/|src/" kind="src" path=""/>
 	<classpathentry kind="lib" path="lib/mssql-jdbc-13.4.0.jre11.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/openpdf-1.3.43.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
