@@ -49,6 +49,7 @@ public class MenuPrincipal extends JFrame {
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
+					
 				}
 			}
 		});
