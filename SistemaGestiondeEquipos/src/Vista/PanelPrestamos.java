@@ -572,6 +572,8 @@ public class PanelPrestamos extends JPanel {
     	        }
     	    }
     	});
+    	
+    	cargarTabla();
     }
     
     private void configurarEventos() {
