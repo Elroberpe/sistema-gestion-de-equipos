@@ -30,7 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
-import Dao.SolicitanteDao;
+import Dao.SolicitanteDAO;
 import Modelo.Solicitante;
 
 public class PanelPrestamos extends JPanel {
@@ -688,18 +688,20 @@ public class PanelPrestamos extends JPanel {
                     "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            SolicitanteDao solicitanteDAO = new SolicitanteDao();
-            Solicitante s = solicitanteDAO.buscarPorDni(dni);
-            if (s == null) {
+            SolicitanteDAO solicitanteDAO = new SolicitanteDAO();
+            ArrayList<Solicitante> resultados = solicitanteDAO.buscarPorDniNombreApellido(dni);
+            if (resultados.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
                     "No se encontró ningún solicitante con ese DNI",
                     "Aviso", JOptionPane.WARNING_MESSAGE);
             } else {
+                Solicitante s = resultados.get(0);
                 idSolicitanteSeleccionado = s.getIdSolicitante();
                 txtNombres.setText(s.getNombre());
                 txtApellidos.setText(s.getApellidos());
                 txtArea.setText(s.getTipo());
-            }});
+            }
+        });
     }
     
     
@@ -709,7 +711,7 @@ public class PanelPrestamos extends JPanel {
     	{modelo.setRowCount(0);
     	 PrestamoDao prestamoDAO = new PrestamoDao();
     	 EquipoDAO equipoDAO = new EquipoDAO();
-    	 SolicitanteDao solicitanteDAO = new SolicitanteDao();
+    	 SolicitanteDAO solicitanteDAO = new SolicitanteDAO();
     	 
     	 ArrayList<Equipo> equipos = equipoDAO.listar();
     	 ArrayList<Solicitante> solicitantes = solicitanteDAO.listar();
