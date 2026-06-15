@@ -544,14 +544,14 @@ public class PanelPrestamos extends JPanel {
     	// PLACEHOLDER txtFechaPrestamo
     	txtFechaPrestamo.addFocusListener(new java.awt.event.FocusAdapter() {
     	    public void focusGained(java.awt.event.FocusEvent e) {
-    	        if (txtFechaPrestamo.getText().equals("25/10/2023")) {
+    	        if (txtFechaPrestamo.getText().equals("dd/mm/aaaa")) {
     	            txtFechaPrestamo.setText("");
     	            txtFechaPrestamo.setForeground(Color.BLACK);
     	        }
     	    }
     	    public void focusLost(java.awt.event.FocusEvent e) {
     	        if (txtFechaPrestamo.getText().isEmpty()) {
-    	            txtFechaPrestamo.setText("25/10/2023");
+    	            txtFechaPrestamo.setText("dd/mm/aaaa");
     	            txtFechaPrestamo.setForeground(Color.GRAY);
     	        }
     	    }
