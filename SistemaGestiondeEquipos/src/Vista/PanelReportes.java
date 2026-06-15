@@ -2,7 +2,7 @@ package Vista;
 
 import Dao.EquipoDAO;
 import Dao.PrestamoDao;
-import Dao.SolicitanteDao;
+import Dao.SolicitanteDAO;
 import Modelo.Equipo;
 import Modelo.Prestamo;
 import Modelo.Solicitante;
@@ -164,7 +164,7 @@ public class PanelReportes extends JPanel {
 
             PrestamoDao prestamoDAO = new PrestamoDao();
             EquipoDAO equipoDAO = new EquipoDAO();
-            SolicitanteDao solicitanteDAO = new SolicitanteDao();
+            SolicitanteDAO solicitanteDAO = new SolicitanteDAO();
             ArrayList<Equipo> equipos = equipoDAO.listar();
             ArrayList<Solicitante> solicitantes = solicitanteDAO.listar();
             ArrayList<Prestamo> prestamos = prestamoDAO.listar();
