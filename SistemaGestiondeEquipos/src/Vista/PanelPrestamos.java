@@ -30,7 +30,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
-
+import Dao.SolicitanteDAO;
+import Modelo.Solicitante;
 
 public class PanelPrestamos extends JPanel {
 
@@ -142,10 +143,11 @@ public class PanelPrestamos extends JPanel {
     	gbcLblDni.insets = new Insets(5, 5, 5, 5);
     	panelBuscarSolicitante.add(lblDniSolicitante, gbcLblDni);
 
-    	// SIN TIPO — VA ES ATRIBUTO
+    	// SIN TIPO — ya es atributo
     	txtDniSolicitante = new JTextField("Ingrese DNI");
     	txtDniSolicitante.setPreferredSize(new Dimension(0, 32));
     	txtDniSolicitante.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    	txtDniSolicitante.setForeground(Color.GRAY); 
     	GridBagConstraints gbcTxtDni = new GridBagConstraints();
     	gbcTxtDni.gridx = 0; gbcTxtDni.gridy = 3; gbcTxtDni.gridwidth = 2;
     	gbcTxtDni.weightx = 1; gbcTxtDni.fill = GridBagConstraints.HORIZONTAL;
@@ -243,9 +245,10 @@ public class PanelPrestamos extends JPanel {
     	gbcLblCodigoEquipo.insets = new Insets(5, 5, 5, 5);
     	panelBuscarEquipo.add(lblCodigoEquipo, gbcLblCodigoEquipo);
 
-    	txtCodigoEquipo = new JTextField();
+    	txtCodigoEquipo = new JTextField("Ingrese Código");
     	txtCodigoEquipo.setPreferredSize(new Dimension(0, 32));
     	txtCodigoEquipo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    	txtCodigoEquipo.setForeground(Color.GRAY); 
     	txtCodigoEquipo.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
     	GridBagConstraints gbcTxtCodigoEquipo = new GridBagConstraints();
     	gbcTxtCodigoEquipo.gridx = 0; gbcTxtCodigoEquipo.gridy = 3; gbcTxtCodigoEquipo.gridwidth = 2;
@@ -380,9 +383,10 @@ public class PanelPrestamos extends JPanel {
     	gbcLblObservaciones.insets = new Insets(5, 5, 5, 5);
     	panelDetalle.add(lblObservaciones, gbcLblObservaciones);
     	
-    	txtFechaPrestamo = new JTextField("25/10/2023");
+    	txtFechaPrestamo = new JTextField("dd/mm/aaaa");
     	txtFechaPrestamo.setPreferredSize(new Dimension(0, 32));
     	txtFechaPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    	txtFechaPrestamo.setForeground(Color.GRAY); 
     	txtFechaPrestamo.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
     	GridBagConstraints gbcTxtFechaPrestamo = new GridBagConstraints();
     	gbcTxtFechaPrestamo.gridx = 0; gbcTxtFechaPrestamo.gridy = 3; gbcTxtFechaPrestamo.gridwidth = 1;
@@ -393,6 +397,7 @@ public class PanelPrestamos extends JPanel {
     	txtFechaDevolucion = new JTextField("dd/mm/aaaa");
     	txtFechaDevolucion.setPreferredSize(new Dimension(0, 32));
     	txtFechaDevolucion.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    	txtFechaDevolucion.setForeground(Color.GRAY);
     	txtFechaDevolucion.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
     	GridBagConstraints gbcTxtFechaDevolucion = new GridBagConstraints();
     	gbcTxtFechaDevolucion.gridx = 1; gbcTxtFechaDevolucion.gridy = 3; gbcTxtFechaDevolucion.gridwidth = 1;
@@ -504,6 +509,69 @@ public class PanelPrestamos extends JPanel {
     	
     	// EVENTOS DE BOTONES =================================================
     	configurarEventos();
+    	// PLACEHOLDER txtDniSolicitante
+    	txtDniSolicitante.addFocusListener(new java.awt.event.FocusAdapter() {
+    	    public void focusGained(java.awt.event.FocusEvent e) {
+    	        if (txtDniSolicitante.getText().equals("Ingrese DNI")) {
+    	            txtDniSolicitante.setText("");
+    	            txtDniSolicitante.setForeground(Color.BLACK);
+    	        }
+    	    }
+    	    public void focusLost(java.awt.event.FocusEvent e) {
+    	        if (txtDniSolicitante.getText().isEmpty()) {
+    	            txtDniSolicitante.setText("Ingrese DNI");
+    	            txtDniSolicitante.setForeground(Color.GRAY);
+    	        }
+    	    }
+    	});
+    	
+    	// PLACEHOLDER txtCodigoEquipo
+    	txtCodigoEquipo .addFocusListener(new java.awt.event.FocusAdapter() {
+    	    public void focusGained(java.awt.event.FocusEvent e) {
+    	        if (txtCodigoEquipo .getText().equals("Ingrese Código")) {
+    	        	txtCodigoEquipo .setText("");
+    	        	txtCodigoEquipo .setForeground(Color.BLACK);
+    	        }
+    	    }
+    	    public void focusLost(java.awt.event.FocusEvent e) {
+    	        if (txtCodigoEquipo .getText().isEmpty()) {
+    	        	txtCodigoEquipo .setText("Ingrese Código");
+    	        	txtCodigoEquipo .setForeground(Color.GRAY);
+    	        }
+    	    }
+    	});
+
+    	// PLACEHOLDER txtFechaPrestamo
+    	txtFechaPrestamo.addFocusListener(new java.awt.event.FocusAdapter() {
+    	    public void focusGained(java.awt.event.FocusEvent e) {
+    	        if (txtFechaPrestamo.getText().equals("25/10/2023")) {
+    	            txtFechaPrestamo.setText("");
+    	            txtFechaPrestamo.setForeground(Color.BLACK);
+    	        }
+    	    }
+    	    public void focusLost(java.awt.event.FocusEvent e) {
+    	        if (txtFechaPrestamo.getText().isEmpty()) {
+    	            txtFechaPrestamo.setText("25/10/2023");
+    	            txtFechaPrestamo.setForeground(Color.GRAY);
+    	        }
+    	    }
+    	});
+
+    	// PLACEHOLDER txtFechaDevolucion
+    	txtFechaDevolucion.addFocusListener(new java.awt.event.FocusAdapter() {
+    	    public void focusGained(java.awt.event.FocusEvent e) {
+    	        if (txtFechaDevolucion.getText().equals("dd/mm/aaaa")) {
+    	            txtFechaDevolucion.setText("");
+    	            txtFechaDevolucion.setForeground(Color.BLACK);
+    	        }
+    	    }
+    	    public void focusLost(java.awt.event.FocusEvent e) {
+    	        if (txtFechaDevolucion.getText().isEmpty()) {
+    	            txtFechaDevolucion.setText("dd/mm/aaaa");
+    	            txtFechaDevolucion.setForeground(Color.GRAY);
+    	        }
+    	    }
+    	});
     }
     
     private void configurarEventos() {
@@ -610,31 +678,73 @@ public class PanelPrestamos extends JPanel {
 		                else {JOptionPane.showMessageDialog(this, "Error al registrar el préstamo", "Error", JOptionPane.ERROR_MESSAGE);}}
             
             catch (Exception ex) {JOptionPane.showMessageDialog(this, "Formato de fecha incorrecto. Use dd/mm/aaaa", "Error", JOptionPane.ERROR_MESSAGE);}});
-        
+         
+        //BOTÓN BUSCAR SOLICITANTE ============================================
+      //BOTÓN BUSCAR SOLICITANTE ============================================
+        btnBuscarSolicitante.addActionListener(e -> {
+            String dni = txtDniSolicitante.getText().trim();
+            if (dni.isEmpty() || dni.equals("Ingrese DNI")) {
+                JOptionPane.showMessageDialog(this,
+                    "Ingrese un DNI para buscar",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            SolicitanteDAO solicitanteDAO = new SolicitanteDAO();
+            ArrayList<Solicitante> resultados = solicitanteDAO.buscarPorDniNombreApellido(dni);
+            if (resultados.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "No se encontró ningún solicitante con ese DNI",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+            } else {
+                Solicitante s = resultados.get(0);
+                idSolicitanteSeleccionado = s.getIdSolicitante();
+                txtNombres.setText(s.getNombre());
+                txtApellidos.setText(s.getApellidos());
+                txtArea.setText(s.getTipo());
+            }
+        });
+    }
+    
+    
 
-        
-        
-        
-         }
-
-        //CARGAR TABLA ============================================================
-        private void cargarTabla()
-        	{modelo.setRowCount(0);
-        	 PrestamoDao prestamoDAO = new PrestamoDao();
-        	 EquipoDAO equipoDAO = new EquipoDAO();
-        	 ArrayList<Equipo> equipos = equipoDAO.listar();
-        	 ArrayList<Prestamo> lista = prestamoDAO.listar();
-        	 for (Prestamo p : lista) {String codigoEquipo = String.valueOf(p.getIdEquipo()); //BUSCAR NOMBRE DE EQUIPO
-        	        						  for (Equipo eq : equipos) {
-        	        							   if (eq.getIdEquipo() == p.getIdEquipo()) {
-        	        								   codigoEquipo = eq.getCodigo() + " - " + eq.getNombre();
-        	        								   break;}}
-					        	        modelo.addRow(new Object[]{
-					        	             p.getIdPrestamo(),
-					        	             p.getIdSolicitante(),
-					        	             codigoEquipo,
-					        	             p.getFechaPrestamo(),
-					        	             p.getFechaDevolucionPrevista(),
-					        	             p.getEstado()});}
-        	}
+  //CARGAR TABLA ============================================================
+    private void cargarTabla()
+    	{modelo.setRowCount(0);
+    	 PrestamoDao prestamoDAO = new PrestamoDao();
+    	 EquipoDAO equipoDAO = new EquipoDAO();
+    	 SolicitanteDAO solicitanteDAO = new SolicitanteDAO();
+    	 
+    	 ArrayList<Equipo> equipos = equipoDAO.listar();
+    	 ArrayList<Solicitante> solicitantes = solicitanteDAO.listar();
+    	 ArrayList<Prestamo> prestamos = prestamoDAO.listar();
+    	 
+    	 for (Prestamo p : prestamos)
+    		 //BUSCAR NOMBRE DE EQUIPO ---------------------------------------------------------------
+    	 	 {String codigoEquipo = String.valueOf(p.getIdEquipo());
+    	       		 for (Equipo eq : equipos) {
+    	        		 if (eq.getIdEquipo() == p.getIdEquipo()) {
+    	        			 codigoEquipo = eq.getCodigo() + " - " + eq.getNombre();
+    	        		 break;}}
+    	        						  
+    	      //BUSCAR NOMBRE DE SOLICITANTE ---------------------------------------------------------------   						  
+    	      String nombreSolicitante = String.valueOf(p.getIdSolicitante());
+    	             for (Solicitante s : solicitantes) {
+    	                  if (s.getIdSolicitante() == p.getIdSolicitante()) {
+    	                      nombreSolicitante = s.getNombre() + " " + s.getApellidos();
+    	                  break;}}					  
+    	       		 
+			  modelo.addRow(new Object[]{
+				     p.getIdPrestamo(),
+				     nombreSolicitante,
+				     codigoEquipo,
+				     p.getFechaPrestamo(),
+				     p.getFechaDevolucionPrevista(),
+				     p.getEstado()});
+			  }
+    	}
+    
+    public void actualizarTabla() {
+        cargarTabla();
+    }
+    
 }
