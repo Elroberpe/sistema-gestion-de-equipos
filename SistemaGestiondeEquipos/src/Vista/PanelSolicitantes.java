@@ -19,12 +19,38 @@ import javax.swing.JSeparator;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.border.EmptyBorder;
+import Dao.SolicitanteDAO;
+import Modelo.Solicitante;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 public class PanelSolicitantes extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
+    private JTextField txtDni;
+    private JTextField txtNombre;
+    private JTextField txtApellidos;
+    private JTextField txtAreaCarrera;
+    private JTextField txtTelefono;
+    private JTextField txtCorreo;
+    private JTextField txtBuscar;
+
+    private JComboBox<String> cboTipo;
+
+    private JButton btnGuardar;
+    private JButton btnLimpiar;
+    private JButton btnEliminar;
+    private JButton btnBuscar;
+    private JButton btnActualizar;
+
+    private JTable table;
+    private DefaultTableModel modelo;
+
+    private int idSeleccionado = 0;
+
     public PanelSolicitantes() {
+    	
         setLayout(new BorderLayout());
         setBackground(new Color(245, 247, 250));
 
@@ -88,7 +114,7 @@ public class PanelSolicitantes extends JPanel {
         lblDni.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblDni);
 
-        JTextField txtDni = new JTextField();
+        txtDni = new JTextField();
         txtDni.setText("Ej: 42345678");
         txtDni.setBounds(16, 85, 278, 32);
         txtDni.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -100,7 +126,7 @@ public class PanelSolicitantes extends JPanel {
         lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblNombre);
 
-        JTextField txtNombre = new JTextField();
+        txtNombre = new JTextField();
         txtNombre.setBounds(16, 153, 278, 32);
         txtNombre.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtNombre.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
@@ -111,7 +137,7 @@ public class PanelSolicitantes extends JPanel {
         lblApellidos.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblApellidos);
 
-        JTextField txtApellidos = new JTextField();
+        txtApellidos = new JTextField();
         txtApellidos.setBounds(16, 221, 278, 32);
         txtApellidos.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtApellidos.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
@@ -122,7 +148,7 @@ public class PanelSolicitantes extends JPanel {
         lblTipo.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblTipo);
 
-        JComboBox<String> cboTipo = new JComboBox<>();
+        cboTipo = new JComboBox<>();
         cboTipo.setModel(new DefaultComboBoxModel<String>(
                 new String[] { "Docente", "Estudiante", "Administrativo" }
         ));
@@ -135,7 +161,7 @@ public class PanelSolicitantes extends JPanel {
         lblAreaCarrera.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblAreaCarrera);
 
-        JTextField txtAreaCarrera = new JTextField();
+        txtAreaCarrera = new JTextField();
         txtAreaCarrera.setBounds(16, 357, 278, 32);
         txtAreaCarrera.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtAreaCarrera.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
@@ -146,7 +172,7 @@ public class PanelSolicitantes extends JPanel {
         lblTelefono.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblTelefono);
 
-        JTextField txtTelefono = new JTextField();
+        txtTelefono = new JTextField();
         txtTelefono.setBounds(16, 425, 278, 32);
         txtTelefono.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtTelefono.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
@@ -157,13 +183,13 @@ public class PanelSolicitantes extends JPanel {
         lblCorreo.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblCorreo);
 
-        JTextField txtCorreo = new JTextField();
+        txtCorreo = new JTextField();
         txtCorreo.setBounds(16, 493, 278, 32);
         txtCorreo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtCorreo.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
         panelFormulario.add(txtCorreo);
 
-        JButton btnGuardar = new JButton("Guardar");
+        btnGuardar = new JButton("Guardar");
         btnGuardar.setBounds(16, 545, 130, 35);
         btnGuardar.setBackground(new Color(25, 118, 210));
         btnGuardar.setForeground(Color.WHITE);
@@ -172,7 +198,7 @@ public class PanelSolicitantes extends JPanel {
         btnGuardar.setBorderPainted(false);
         panelFormulario.add(btnGuardar);
 
-        JButton btnLimpiar = new JButton("Limpiar");
+        btnLimpiar = new JButton("Limpiar");
         btnLimpiar.setBounds(164, 545, 130, 35);
         btnLimpiar.setBackground(new Color(130, 130, 130));
         btnLimpiar.setForeground(Color.WHITE);
@@ -181,7 +207,7 @@ public class PanelSolicitantes extends JPanel {
         btnLimpiar.setBorderPainted(false);
         panelFormulario.add(btnLimpiar);
 
-        JButton btnEliminar = new JButton("Eliminar");
+        btnEliminar = new JButton("Eliminar");
         btnEliminar.setBounds(16, 590, 278, 35);
         btnEliminar.setBackground(new Color(211, 47, 47));
         btnEliminar.setForeground(Color.WHITE);
@@ -210,7 +236,7 @@ public class PanelSolicitantes extends JPanel {
         panelBuscador.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         panelTabla.add(panelBuscador, BorderLayout.NORTH);
 
-        JTextField txtBuscar = new JTextField("Buscar solicitante...");
+        txtBuscar = new JTextField();
         txtBuscar.setPreferredSize(new Dimension(260, 32));
         txtBuscar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtBuscar.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
@@ -220,7 +246,7 @@ public class PanelSolicitantes extends JPanel {
         panelAcciones.setOpaque(false);
         panelAcciones.setLayout(new FlowLayout(FlowLayout.RIGHT, 8, 0));
 
-        JButton btnBuscar = new JButton("Buscar");
+        btnBuscar = new JButton("Buscar");
         btnBuscar.setPreferredSize(new Dimension(100, 32));
         btnBuscar.setBackground(new Color(25, 118, 210));
         btnBuscar.setForeground(Color.WHITE);
@@ -228,7 +254,7 @@ public class PanelSolicitantes extends JPanel {
         btnBuscar.setFocusPainted(false);
         btnBuscar.setBorderPainted(false);
 
-        JButton btnActualizar = new JButton("Actualizar");
+        btnActualizar = new JButton("Actualizar");
         btnActualizar.setPreferredSize(new Dimension(100, 32));
         btnActualizar.setBackground(new Color(97, 97, 97));
         btnActualizar.setForeground(Color.WHITE);
@@ -248,18 +274,19 @@ public class PanelSolicitantes extends JPanel {
         scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         panelTabla.add(scrollPane, BorderLayout.CENTER);
 
-        JTable table = new JTable();
+        table = new JTable();
 
-        DefaultTableModel modelo = new DefaultTableModel(
-                new Object[][] {
-                        { "42345678", "Juan Carlos", "Ramírez Torres", "Estudiante", "Computación e Informática", "987654321", "juan.ramirez@gmail.com" },
-                        { "71234567", "María Elena", "Gómez Vargas", "Docente", "Matemática", "912345678", "maria.gomez@institucion.edu" },
-                        { "45678901", "Jorge Luis", "Mendoza Castro", "Administrativo", "Soporte TI", "945678901", "jorge.mendoza@institucion.edu" },
-                        { "76543210", "Ana Lucía", "Pérez Rojas", "Estudiante", "Administración", "976543210", "ana.perez@gmail.com" },
-                        { "41238945", "Roberto", "Díaz Morales", "Docente", "Contabilidad", "981234567", "roberto.diaz@institucion.edu" }
-                },
+        modelo = new DefaultTableModel(
+                new Object[][] {},
                 new String[] {
-                        "DNI", "Nombres", "Apellidos", "Tipo", "Área/Carrera", "Teléfono", "Correo"
+                        "ID",
+                        "DNI",
+                        "Nombres",
+                        "Apellidos",
+                        "Tipo",
+                        "Área/Carrera",
+                        "Teléfono",
+                        "Correo"
                 }
         ) {
             private static final long serialVersionUID = 1L;
@@ -295,5 +322,225 @@ public class PanelSolicitantes extends JPanel {
         table.getColumnModel().getColumn(4).setPreferredWidth(180);
         table.getColumnModel().getColumn(5).setPreferredWidth(100);
         table.getColumnModel().getColumn(6).setPreferredWidth(200);
+        
+        listarSolicitantes();
+
+        btnGuardar.addActionListener(e -> guardarSolicitante());
+
+        btnBuscar.addActionListener(e -> buscarSolicitante());
+
+        btnActualizar.addActionListener(e -> listarSolicitantes());
+
+        btnEliminar.addActionListener(e -> eliminarSolicitante());
+
+        btnLimpiar.addActionListener(e -> limpiarCampos());
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                cargarFila();
+            }
+        });
+        
     }
-}
+        
+        private void listarSolicitantes() {
+
+            SolicitanteDAO dao = new SolicitanteDAO();
+
+            modelo.setRowCount(0);
+
+            ArrayList<Solicitante> lista = dao.listar();
+
+            for (Solicitante s : lista) {
+
+                modelo.addRow(new Object[]{
+                        s.getIdSolicitante(),
+                        s.getDni(),
+                        s.getNombre(),
+                        s.getApellidos(),
+                        s.getTipo(),
+                        s.getSalonCurso(),
+                        s.getCelular(),
+                        s.getCorreo()
+                });
+            }
+        }
+        
+        private void limpiarCampos() {
+
+            idSeleccionado = 0;
+
+            txtDni.setText("");
+            txtNombre.setText("");
+            txtApellidos.setText("");
+            txtAreaCarrera.setText("");
+            txtTelefono.setText("");
+            txtCorreo.setText("");
+
+            cboTipo.setSelectedIndex(0);
+
+            table.clearSelection();
+        }
+        
+        private void cargarFila() {
+
+            int fila = table.getSelectedRow();
+
+            if (fila == -1) {
+                return;
+            }
+
+            idSeleccionado = Integer.parseInt(
+                    table.getValueAt(fila, 0).toString());
+
+            txtDni.setText(
+                    table.getValueAt(fila, 1).toString());
+
+            txtNombre.setText(
+                    table.getValueAt(fila, 2).toString());
+
+            txtApellidos.setText(
+                    table.getValueAt(fila, 3).toString());
+
+            cboTipo.setSelectedItem(
+                    table.getValueAt(fila, 4).toString());
+
+            txtAreaCarrera.setText(
+                    table.getValueAt(fila, 5).toString());
+
+            txtTelefono.setText(
+                    table.getValueAt(fila, 6).toString());
+
+            txtCorreo.setText(
+                    table.getValueAt(fila, 7).toString());
+        }
+        
+        private void buscarSolicitante() {
+
+            SolicitanteDAO dao = new SolicitanteDAO();
+
+            modelo.setRowCount(0);
+
+            ArrayList<Solicitante> lista =
+                    dao.buscarPorDniNombreApellido(
+                            txtBuscar.getText());
+
+            for (Solicitante s : lista) {
+
+                modelo.addRow(new Object[]{
+                        s.getIdSolicitante(),
+                        s.getDni(),
+                        s.getNombre(),
+                        s.getApellidos(),
+                        s.getTipo(),
+                        s.getSalonCurso(),
+                        s.getCelular(),
+                        s.getCorreo()
+                });
+            }
+        }
+        
+        private void guardarSolicitante() {
+
+            if (txtDni.getText().trim().isEmpty()
+                    || txtNombre.getText().trim().isEmpty()
+                    || txtApellidos.getText().trim().isEmpty()) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Complete los campos obligatorios");
+
+                return;
+            }
+
+            SolicitanteDAO dao = new SolicitanteDAO();
+
+            Solicitante s = new Solicitante();
+
+            s.setDni(txtDni.getText().trim());
+            s.setNombre(txtNombre.getText().trim());
+            s.setApellidos(txtApellidos.getText().trim());
+            s.setTipo(cboTipo.getSelectedItem().toString());
+            s.setSalonCurso(txtAreaCarrera.getText().trim());
+            s.setCelular(txtTelefono.getText().trim());
+            s.setCorreo(txtCorreo.getText().trim());
+
+            boolean resultado;
+
+            if (idSeleccionado == 0) {
+
+                if (dao.existeDni(s.getDni())) {
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "El DNI ya existe");
+
+                    return;
+                }
+
+                resultado = dao.guardar(s);
+
+            } else {
+
+                s.setIdSolicitante(idSeleccionado);
+
+                resultado = dao.actualizar(s);
+            }
+
+            if (resultado) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Datos guardados correctamente");
+
+                listarSolicitantes();
+                limpiarCampos();
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No se pudo guardar");
+            }
+        }
+        
+        private void eliminarSolicitante() {
+
+            if (idSeleccionado == 0) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Seleccione un solicitante");
+
+                return;
+            }
+
+            int opcion = JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Desea eliminar el solicitante?",
+                    "Confirmar",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (opcion != JOptionPane.YES_OPTION) {
+                return;
+            }
+
+            SolicitanteDAO dao = new SolicitanteDAO();
+
+            if (dao.eliminar(idSeleccionado)) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Solicitante eliminado");
+
+                listarSolicitantes();
+                limpiarCampos();
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No se puede eliminar porque tiene préstamos registrados");
+            }
+        }
+    }
