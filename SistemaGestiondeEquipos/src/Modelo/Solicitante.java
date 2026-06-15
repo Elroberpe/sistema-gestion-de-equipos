@@ -13,6 +13,18 @@ public class Solicitante {
 
     public Solicitante() {}
 
+    public Solicitante(int idSolicitante, String dni, String nombre, String apellidos, 
+            String tipo, String salonCurso, String celular, String correo) {
+			this.idSolicitante = idSolicitante;
+			this.dni = dni;
+			this.nombre = nombre;
+			this.apellidos = apellidos;
+			this.tipo = tipo;
+			this.salonCurso = salonCurso;
+			this.celular = celular;
+			this.correo = correo;
+			}
+    
     public int getIdSolicitante() { return idSolicitante; }
     public void setIdSolicitante(int idSolicitante) { this.idSolicitante = idSolicitante; }
 
