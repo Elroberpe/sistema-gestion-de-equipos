@@ -20,10 +20,34 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Locale;
+
+import Controller.EquipoController;
+import Controller.PrestamoController;
+import Modelo.Equipo;
+import Modelo.Prestamo;
+
 public class PaneInicio extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTable table;
+
+	private EquipoController equipoController = new EquipoController();
+	private PrestamoController prestamoController = new PrestamoController();
+
+	private JLabel lblNumEquiposRegistrados;
+	private JLabel lblDetalleEquiposRegistrados;
+	private JLabel lblNumEquiposDisponibles;
+	private JLabel lblDetalleEquiposDisponibles;
+	private JLabel lblNumEquiposPrestados;
+	private JLabel lblDetalleEquiposPrestados;
+	private JLabel lblNumPrestamosActivos;
+	private JLabel lblNumPrestamosVencidos;
+
+	private DefaultTableModel modeloTabla;
 
 	public PaneInicio() {
         setLayout(new BorderLayout());
@@ -44,6 +68,9 @@ public class PaneInicio extends JPanel {
         
         JButton btnReportes = new JButton("Reportes");
         contenedorBotones.add(btnReportes);
+
+        JButton btnActualizar = new JButton("Actualizar");
+        contenedorBotones.add(btnActualizar);
         
         btnPrestamo.setBackground(new Color(25,118,210));
         btnPrestamo.setForeground(Color.WHITE);
@@ -59,6 +86,11 @@ public class PaneInicio extends JPanel {
         btnReportes.setForeground(Color.WHITE);
         btnReportes.setFocusPainted(false);
         btnReportes.setBorderPainted(false);
+
+        btnActualizar.setBackground(new Color(25, 118, 210));
+        btnActualizar.setForeground(Color.WHITE);
+        btnActualizar.setFocusPainted(false);
+        btnActualizar.setBorderPainted(false);
         
         
         JPanel contenedorPrincipal = new JPanel();
@@ -96,11 +128,30 @@ public class PaneInicio extends JPanel {
         cardPrestamosVencidos.setBackground(Color.WHITE);
         panelCards.add(cardPrestamosVencidos);
         
-        llenarCard(cardEquiposRegistrados, "EQUIPOS", "REGISTRADOS", "1,248", "↗ +12 este mes", new Color(46, 125, 50));
-        llenarCard(cardEquiposDisponibles, "EQUIPOS", "DISPONIBLES", "842", "67.4% del total", new Color(70, 70, 70));
-        llenarCard(cardEquiposPrestados, "EQUIPOS", "PRESTADOS", "391", "31.3% del total", new Color(70, 70, 70));
-        llenarCard(cardPrestamosActivos, "PRÉSTAMOS", "ACTIVOS", "156", "Requieren seguimiento", new Color(70, 70, 70));
-        llenarCard(cardPrestamosVencidos, "PRÉSTAMOS", "VENCIDOS", "15", "Acción requerida", new Color(211, 47, 47));
+        // Se crean las tarjetas guardando referencias a los labels para poder actualizarlas
+        lblNumEquiposRegistrados = crearNumeroCard(cardEquiposRegistrados);
+        lblDetalleEquiposRegistrados = crearDetalleCard(cardEquiposRegistrados);
+        crearTitulosCard(cardEquiposRegistrados, "EQUIPOS", "REGISTRADOS");
+
+        lblNumEquiposDisponibles = crearNumeroCard(cardEquiposDisponibles);
+        lblDetalleEquiposDisponibles = crearDetalleCard(cardEquiposDisponibles);
+        crearTitulosCard(cardEquiposDisponibles, "EQUIPOS", "DISPONIBLES");
+
+        lblNumEquiposPrestados = crearNumeroCard(cardEquiposPrestados);
+        lblDetalleEquiposPrestados = crearDetalleCard(cardEquiposPrestados);
+        crearTitulosCard(cardEquiposPrestados, "EQUIPOS", "PRESTADOS");
+
+        lblNumPrestamosActivos = crearNumeroCard(cardPrestamosActivos);
+        JLabel lblDetalleActivos = crearDetalleCard(cardPrestamosActivos);
+        lblDetalleActivos.setText("Requieren seguimiento");
+        lblDetalleActivos.setForeground(new Color(70, 70, 70));
+        crearTitulosCard(cardPrestamosActivos, "PRÉSTAMOS", "ACTIVOS");
+
+        lblNumPrestamosVencidos = crearNumeroCard(cardPrestamosVencidos);
+        JLabel lblDetalleVencidos = crearDetalleCard(cardPrestamosVencidos);
+        lblDetalleVencidos.setText("Acción requerida");
+        lblDetalleVencidos.setForeground(new Color(211, 47, 47));
+        crearTitulosCard(cardPrestamosVencidos, "PRÉSTAMOS", "VENCIDOS");
         
         JPanel panelTabla = new JPanel();
         panelTabla.setLayout(new BorderLayout());
@@ -135,25 +186,20 @@ public class PaneInicio extends JPanel {
 
         table = new JTable();
 
-        DefaultTableModel modelo = new DefaultTableModel(
-            new Object[][] {
-                {"PR-\n1042", "Laptop Dell Latitude 7420", "Ana Martínez (Ventas)", "24 Oct 2023", "31 Oct 2023", "Activo"},
-                {"PR-\n1041", "Proyector Epson WXGA", "Carlos Gómez (Marketing)", "23 Oct 2023", "24 Oct 2023", "Vencido"},
-                {"PR-\n1040", "MacBook Pro M1 16\"", "Laura Sánchez (Diseño)", "20 Oct 2023", "20 Nov 2023", "Activo"},
-                {"PR-\n1039", "Monitor LG 27\" 4K", "Roberto Díaz (Desarrollo)", "18 Oct 2023", "18 Ene 2024", "Activo"},
-                {"PR-\n1038", "iPad Pro 11\"", "Elena Ruiz (Dirección)", "15 Oct 2023", "22 Oct 2023", "Devuelto"}
-            },
+        modeloTabla = new DefaultTableModel(
+            new Object[][] {},
             new String[] {
-                "ID", "EQUIPO", "SOLICITANTE", "FECHA PRÉSTAMO", "FECHA DEVOLUCIÓN", "ESTADO"
+                "ID", "EQUIPO", "ID SOLICITANTE", "FECHA PRÉSTAMO", "FECHA DEVOLUCIÓN", "ESTADO"
             }
         ) {
+            private static final long serialVersionUID = 1L;
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
 
-        table.setModel(modelo);
+        table.setModel(modeloTabla);
         scrollPane.setViewportView(table);
         
         table.setRowHeight(42);
@@ -174,13 +220,112 @@ public class PaneInicio extends JPanel {
                 table.getTableHeader().getPreferredSize().width,
                 35
         ));
+
+        btnActualizar.addActionListener(e -> cargarDatos());
+
+        cargarDatos();
         
 	}
-	private void llenarCard(JPanel card, String titulo1, String titulo2, String numero, String detalle, Color colorDetalle) {
+
+	private void cargarDatos() {
+        ArrayList<Equipo> equipos = equipoController.listar();
+        ArrayList<Prestamo> prestamos = prestamoController.listar();
+
+        int totalEquipos = equipos.size();
+        int disponibles = 0;
+        int prestados = 0;
+
+        for (Equipo eq : equipos) {
+            if ("Disponible".equalsIgnoreCase(eq.getEstado())) {
+                disponibles++;
+            } else if ("Prestado".equalsIgnoreCase(eq.getEstado())) {
+                prestados++;
+            }
+        }
+
+        int activos = 0;
+        int vencidos = 0;
+        LocalDate hoy = LocalDate.now();
+
+        for (Prestamo p : prestamos) {
+            if ("Activo".equalsIgnoreCase(p.getEstado())) {
+                activos++;
+                if (p.getFechaDevolucionPrevista() != null && p.getFechaDevolucionPrevista().isBefore(hoy)) {
+                    vencidos++;
+                }
+            } else if ("Vencido".equalsIgnoreCase(p.getEstado())) {
+                vencidos++;
+            }
+        }
+
+        lblNumEquiposRegistrados.setText(String.valueOf(totalEquipos));
+        lblNumEquiposDisponibles.setText(String.valueOf(disponibles));
+        lblNumEquiposPrestados.setText(String.valueOf(prestados));
+        lblNumPrestamosActivos.setText(String.valueOf(activos));
+        lblNumPrestamosVencidos.setText(String.valueOf(vencidos));
+
+        double pctDisponibles = totalEquipos > 0 ? (disponibles * 100.0 / totalEquipos) : 0;
+        double pctPrestados = totalEquipos > 0 ? (prestados * 100.0 / totalEquipos) : 0;
+
+        lblDetalleEquiposRegistrados.setText("Total de equipos en el sistema");
+        lblDetalleEquiposDisponibles.setText(String.format("%.1f%% del total", pctDisponibles));
+        lblDetalleEquiposPrestados.setText(String.format("%.1f%% del total", pctPrestados));
+
+        // Cargar tabla con los ultimos prestamos (los de mayor id primero)
+        modeloTabla.setRowCount(0);
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd MMM yyyy", new Locale("es", "ES"));
+
+        prestamos.sort((a, b) -> Integer.compare(b.getIdPrestamo(), a.getIdPrestamo()));
+
+        int max = Math.min(5, prestamos.size());
+        for (int i = 0; i < max; i++) {
+            Prestamo p = prestamos.get(i);
+
+            String nombreEquipo = "Equipo #" + p.getIdEquipo();
+            for (Equipo eq : equipos) {
+                if (eq.getIdEquipo() == p.getIdEquipo()) {
+                    nombreEquipo = eq.getNombre();
+                    break;
+                }
+            }
+
+            String fechaPrestamo = p.getFechaPrestamo() != null ? p.getFechaPrestamo().format(formato) : "-";
+            String fechaDevolucion = p.getFechaDevolucionPrevista() != null ? p.getFechaDevolucionPrevista().format(formato) : "-";
+
+            modeloTabla.addRow(new Object[]{
+                "PR-" + p.getIdPrestamo(),
+                nombreEquipo,
+                "Solicitante #" + p.getIdSolicitante(),
+                fechaPrestamo,
+                fechaDevolucion,
+                p.getEstado()
+            });
+        }
+	}
+
+	private JLabel crearNumeroCard(JPanel card) {
 	    card.setLayout(null);
 	    card.setBackground(Color.WHITE);
 	    card.setBorder(BorderFactory.createLineBorder(new Color(225, 225, 225)));
 
+	    JLabel lblNumero = new JLabel("0");
+	    lblNumero.setBounds(14, 55, 130, 30);
+	    lblNumero.setFont(new Font("Segoe UI", Font.BOLD, 24));
+	    lblNumero.setForeground(Color.BLACK);
+	    card.add(lblNumero);
+	    return lblNumero;
+	}
+
+	private JLabel crearDetalleCard(JPanel card) {
+	    JLabel lblDetalle = new JLabel("");
+	    lblDetalle.setBounds(14, 90, 200, 18);
+	    lblDetalle.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+	    lblDetalle.setForeground(new Color(70, 70, 70));
+	    card.add(lblDetalle);
+	    return lblDetalle;
+	}
+
+	private void crearTitulosCard(JPanel card, String titulo1, String titulo2) {
 	    JLabel lblTitulo1 = new JLabel(titulo1);
 	    lblTitulo1.setBounds(14, 10, 130, 18);
 	    lblTitulo1.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -192,17 +337,5 @@ public class PaneInicio extends JPanel {
 	    lblTitulo2.setFont(new Font("Segoe UI", Font.BOLD, 12));
 	    lblTitulo2.setForeground(new Color(55, 65, 81));
 	    card.add(lblTitulo2);
-
-	    JLabel lblNumero = new JLabel(numero);
-	    lblNumero.setBounds(14, 55, 130, 30);
-	    lblNumero.setFont(new Font("Segoe UI", Font.BOLD, 24));
-	    lblNumero.setForeground(Color.BLACK);
-	    card.add(lblNumero);
-
-	    JLabel lblDetalle = new JLabel(detalle);
-	    lblDetalle.setBounds(14, 90, 140, 18);
-	    lblDetalle.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-	    lblDetalle.setForeground(colorDetalle);
-	    card.add(lblDetalle);
 	}
 }
