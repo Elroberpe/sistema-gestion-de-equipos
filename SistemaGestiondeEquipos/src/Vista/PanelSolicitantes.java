@@ -114,8 +114,7 @@ public class PanelSolicitantes extends JPanel {
         lblDni.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblDni);
 
-        txtDni = new JTextField();
-        txtDni.setText("Ej: 42345678");
+        txtDni = new JTextField("Ej: 42345678");
         txtDni.setBounds(16, 85, 278, 32);
         txtDni.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtDni.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));

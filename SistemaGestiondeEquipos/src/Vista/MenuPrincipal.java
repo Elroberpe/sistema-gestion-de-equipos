@@ -1,6 +1,5 @@
 package Vista;
 
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
@@ -9,7 +8,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import Modelo.Usuario;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -23,10 +23,10 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class MenuPrincipal extends JFrame {
+	
+	private Usuario usuarioActual;
 	
 	private JPanel contenedor;
 	private CardLayout cardLayout;
@@ -38,27 +38,9 @@ public class MenuPrincipal extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MenuPrincipal frame = new MenuPrincipal();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
-	public MenuPrincipal() {
-		
+	
+	public MenuPrincipal(Usuario usuarioLogueado ) {
+		this.usuarioActual = usuarioLogueado;
 	
 	    setTitle("Sistema de Gestión de Equipos");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -115,7 +97,11 @@ public class MenuPrincipal extends JFrame {
 		 JButton btnPrestamos = crearBotonSidebar("Préstamos", "/Imagenes/Iconos/prestamos.png");
 		 JButton btnDevoluciones = crearBotonSidebar("Devoluciones", "/Imagenes/Iconos/devoluciones.png");
 		 JButton btnReportes = crearBotonSidebar("Reportes", "/Imagenes/Iconos/reportes.png");
-		 JButton btnUsuarios = crearBotonSidebar("Usuarios", "/Imagenes/Iconos/usuarios.png");		 
+		 JButton btnUsuarios = crearBotonSidebar("Usuarios", "/Imagenes/Iconos/usuarios.png");	
+		 
+		 if (usuarioActual.getRol().equals("Operador")) {
+			 btnUsuarios.setVisible(false); 
+		 }
 		 
 		 sidebar.add(btnInicio);
 		 sidebar.add(btnEquipos);
