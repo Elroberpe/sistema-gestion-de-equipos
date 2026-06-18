@@ -27,7 +27,7 @@ import javax.swing.JButton;
 public class MenuPrincipal extends JFrame {
 	
 	private Usuario usuarioActual;
-	
+	private JLabel lblRol;
 	private JPanel contenedor;
 	private CardLayout cardLayout;
 	private JButton botonSeleccionado;
@@ -88,7 +88,7 @@ public class MenuPrincipal extends JFrame {
 		 lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
 		 lblTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		 JLabel lblRol = new JLabel("Administrador");
+		 lblRol = new JLabel(usuarioLogueado.getRol());
 		 lblRol.setForeground(new Color(230, 230, 230));
 		 lblRol.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		 lblRol.setAlignmentX(Component.LEFT_ALIGNMENT);
