@@ -8,6 +8,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
@@ -31,6 +33,8 @@ import Modelo.Equipo;
 import Modelo.Prestamo;
 
 public class PaneInicio extends JPanel {
+	
+	
 
 	private static final long serialVersionUID = 1L;
 	private JTable table;
@@ -61,13 +65,27 @@ public class PaneInicio extends JPanel {
         contenedorBotones.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 10));
         
         JButton btnPrestamo = new JButton("Prestamos");
+        btnPrestamo.addActionListener(e -> {
+        	irAlPanelSeleccionado("PRESTAMOS");
+		});
+        
+
+        
         contenedorBotones.add(btnPrestamo);
         
         JButton btnDevolucion = new JButton("Devolucion");
         contenedorBotones.add(btnDevolucion);
         
+        btnDevolucion.addActionListener(e -> {
+        	irAlPanelSeleccionado("DEVOLUCIONES");
+        });
+        
+        
         JButton btnReportes = new JButton("Reportes");
         contenedorBotones.add(btnReportes);
+        btnReportes.addActionListener(e -> {
+        	irAlPanelSeleccionado("REPORTES");
+        });
 
         JButton btnActualizar = new JButton("Actualizar");
         contenedorBotones.add(btnActualizar);
@@ -337,5 +355,11 @@ public class PaneInicio extends JPanel {
 	    lblTitulo2.setFont(new Font("Segoe UI", Font.BOLD, 12));
 	    lblTitulo2.setForeground(new Color(55, 65, 81));
 	    card.add(lblTitulo2);
+	}
+	
+	private void irAlPanelSeleccionado(String panel) {
+		
+		  MenuPrincipal menuPrincipal= (MenuPrincipal) SwingUtilities.getWindowAncestor(this);		  
+		  menuPrincipal.irAlPanel(panel);
 	}
 }

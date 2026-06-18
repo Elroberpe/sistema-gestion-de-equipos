@@ -31,7 +31,17 @@ public class MenuPrincipal extends JFrame {
 	private JPanel contenedor;
 	private CardLayout cardLayout;
 	private JButton botonSeleccionado;
-
+	private JButton btnPrestamos;
+	private JButton btnDevoluciones;
+	private JButton btnReportes;
+	private PanelEquipos panelEquipos;
+	private PanelSolicitantes panelSolicitantes;
+	private PanelPrestamos panelPrestamos;
+	private PanelDevoluciones panelDevoluciones;
+	private PanelReportes panelReportes;
+	private PanelUsuarios panelUsuarios;
+	
+	
 	private final Color COLOR_NORMAL = new Color(26, 35, 126);
 	private final Color COLOR_HOVER = new Color(40, 53, 147);
 	private final Color COLOR_ACTIVO = new Color(48, 63, 159);
@@ -94,9 +104,9 @@ public class MenuPrincipal extends JFrame {
 		 JButton btnInicio = crearBotonSidebar("Inicio", "/Imagenes/Iconos/inicio.png");
 		 JButton btnEquipos = crearBotonSidebar("Equipos", "/Imagenes/Iconos/equipos.png");
 		 JButton btnSolicitantes = crearBotonSidebar("Solicitantes", "/Imagenes/Iconos/solicitantes.png");
-		 JButton btnPrestamos = crearBotonSidebar("Préstamos", "/Imagenes/Iconos/prestamos.png");
-		 JButton btnDevoluciones = crearBotonSidebar("Devoluciones", "/Imagenes/Iconos/devoluciones.png");
-		 JButton btnReportes = crearBotonSidebar("Reportes", "/Imagenes/Iconos/reportes.png");
+		 btnPrestamos = crearBotonSidebar("Préstamos", "/Imagenes/Iconos/prestamos.png");
+		 btnDevoluciones = crearBotonSidebar("Devoluciones", "/Imagenes/Iconos/devoluciones.png");
+		 btnReportes = crearBotonSidebar("Reportes", "/Imagenes/Iconos/reportes.png");
 		 JButton btnUsuarios = crearBotonSidebar("Usuarios", "/Imagenes/Iconos/usuarios.png");	
 		 
 		 if (usuarioActual.getRol().equals("Operador")) {
@@ -124,20 +134,7 @@ public class MenuPrincipal extends JFrame {
 		
 		
 		PaneInicio paneInicio = new PaneInicio();
-		PanelEquipos panelEquipos = new PanelEquipos();
-		PanelSolicitantes panelSolicitantes = new PanelSolicitantes();
-		PanelPrestamos panelPrestamos = new PanelPrestamos();
-		PanelDevoluciones panelDevoluciones = new PanelDevoluciones();
-		PanelReportes panelReportes = new PanelReportes();
-		PanelUsuarios panelUsuarios = new PanelUsuarios();
-		
 		contenedor.add(paneInicio, "INICIO");
-		contenedor.add(panelEquipos, "EQUIPOS");
-		contenedor.add(panelSolicitantes, "SOLICITANTES");
-		contenedor.add(panelPrestamos, "PRESTAMOS");
-		contenedor.add(panelDevoluciones, "DEVOLUCIONES");
-		contenedor.add(panelReportes, "REPORTES");
-		contenedor.add(panelUsuarios, "USUARIOS");
 		
 		btnInicio.addActionListener(e -> {
 		    mostrarPanel("INICIO");
@@ -145,37 +142,72 @@ public class MenuPrincipal extends JFrame {
 		});
 
 		btnEquipos.addActionListener(e -> {
+			if(panelEquipos == null) {
+				panelEquipos = new PanelEquipos();
+				contenedor.add(panelEquipos, "EQUIPOS");
+			}
+			
 		    mostrarPanel("EQUIPOS");
 		    seleccionarBoton(btnEquipos);
 		});
 
 		btnSolicitantes.addActionListener(e -> {
+			if(panelSolicitantes == null) {
+				panelSolicitantes = new PanelSolicitantes();
+				contenedor.add(panelSolicitantes, "SOLICITANTES");
+			}
+
 		    mostrarPanel("SOLICITANTES");
 		    seleccionarBoton(btnSolicitantes);
 		});
 
 		btnPrestamos.addActionListener(e -> {
+			if(panelPrestamos == null) {
+				panelPrestamos = new PanelPrestamos();
+				contenedor.add(panelPrestamos, "PRESTAMOS");
+			}
+
 		    mostrarPanel("PRESTAMOS");
 		    seleccionarBoton(btnPrestamos);
 		});
 
 		btnDevoluciones.addActionListener(e -> {
+
+		    if (panelDevoluciones == null) {
+		        panelDevoluciones = new PanelDevoluciones();
+		        contenedor.add(panelDevoluciones, "DEVOLUCIONES");
+		    }
+
 		    mostrarPanel("DEVOLUCIONES");
 		    seleccionarBoton(btnDevoluciones);
 		});
 
 		btnReportes.addActionListener(e -> {
+
+		    if (panelReportes == null) {
+		        panelReportes = new PanelReportes();
+		        contenedor.add(panelReportes, "REPORTES");
+		    }
+
 		    mostrarPanel("REPORTES");
 		    seleccionarBoton(btnReportes);
 		});
 
 		btnUsuarios.addActionListener(e -> {
+
+		    if (panelUsuarios == null) {
+		        panelUsuarios = new PanelUsuarios();
+		        contenedor.add(panelUsuarios, "USUARIOS");
+		    }
+
 		    mostrarPanel("USUARIOS");
 		    seleccionarBoton(btnUsuarios);
 		});
 		
-		btnSalir.addActionListener(e -> {
-		    System.exit(0);
+		btnSalir.addActionListener(e ->{
+			FrmLogin login = new FrmLogin();
+			login.setVisible(true);
+			dispose();
 		});
 		
 		mostrarPanel("INICIO");
@@ -230,13 +262,46 @@ public class MenuPrincipal extends JFrame {
 	    return boton;
 	}
 	
-	private void seleccionarBoton(JButton boton) {
+	public void seleccionarBoton(JButton boton) {
 	    if (botonSeleccionado != null) {
 	        botonSeleccionado.setBackground(COLOR_NORMAL);
 	    }
 
 	    botonSeleccionado = boton;
 	    botonSeleccionado.setBackground(COLOR_ACTIVO);
+	}
+	
+
+	public void irAlPanel(String panel) {
+
+	    switch (panel) {
+
+	        case "PRESTAMOS":
+	            if (panelPrestamos == null) {
+	                panelPrestamos = new PanelPrestamos();
+	                contenedor.add(panelPrestamos, "PRESTAMOS");
+	            }
+	            seleccionarBoton(btnPrestamos);
+	            break;
+
+	        case "DEVOLUCIONES":
+	            if (panelDevoluciones == null) {
+	                panelDevoluciones = new PanelDevoluciones();
+	                contenedor.add(panelDevoluciones, "DEVOLUCIONES");
+	            }
+	            seleccionarBoton(btnDevoluciones);
+	            break;
+
+	        case "REPORTES":
+	            if (panelReportes == null) {
+	                panelReportes = new PanelReportes();
+	                contenedor.add(panelReportes, "REPORTES");
+	            }
+	            seleccionarBoton(btnReportes);
+	            break;
+	    }
+
+	    mostrarPanel(panel);
 	}
 	
 	private ImageIcon cargarIcono(String ruta, int ancho, int alto) {
@@ -251,7 +316,7 @@ public class MenuPrincipal extends JFrame {
 	    return new ImageIcon(imagen);
 	}
 	
-	private void mostrarPanel(String nombrePanel) {
+	public void mostrarPanel(String nombrePanel) {
 		cardLayout.show(contenedor, nombrePanel);
 	}
 }
