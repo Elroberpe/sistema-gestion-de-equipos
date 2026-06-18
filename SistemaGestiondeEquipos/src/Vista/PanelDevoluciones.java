@@ -459,10 +459,7 @@ public class PanelDevoluciones extends JPanel {
         cboEstadoEquipo.setModel(new DefaultComboBoxModel<String>(
                 new String[] {
                         "Disponible para nuevo préstamo",
-                        "Requiere mantenimiento",
-                        "Equipo dañado",
-                        "Equipo incompleto",
-                        "Dar de baja"
+
                 }
         ));
         cboEstadoEquipo.setPreferredSize(new Dimension(0, 32));
@@ -485,6 +482,11 @@ public class PanelDevoluciones extends JPanel {
         btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btnCancelar.setFocusPainted(false);
         btnCancelar.setBorderPainted(false);
+        
+        btnCancelar.addActionListener(e ->{
+        	tablePrestamos.clearSelection();
+        	limpiarDetallePrestamo();
+        });
 
         GridBagConstraints gbcBtnCancelar = new GridBagConstraints();
         gbcBtnCancelar.gridx = 2;
@@ -676,5 +678,20 @@ public class PanelDevoluciones extends JPanel {
     		JOptionPane.showMessageDialog(null, "No se pudo registrar la devolucion");
     	}
     	
+    }
+    
+    private void limpiarDetallePrestamo() {
+    	lblValorSolicitante.setText("");
+        lblValorEquipo.setText("");
+        lblValorFechaPrestamo.setText("");
+        lblValorFechaLimite.setText("");
+        lblValorFechaActual.setText(LocalDateTime.now().toLocalDate().toString());
+        lblValorEstadoDevolucion.setText("");
+    	
+        txtObservacion.setText("");
+        lblValorEstadoDevolucion.setOpaque(false);
+        lblValorEstadoDevolucion.setBorder(null);
+        
+        
     }
 }
