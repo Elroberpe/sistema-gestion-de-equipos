@@ -21,6 +21,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.border.EmptyBorder;
 import Dao.SolicitanteDAO;
 import Modelo.Solicitante;
+import Controller.SolicitanteController;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
@@ -48,6 +49,8 @@ public class PanelSolicitantes extends JPanel {
     private DefaultTableModel modelo;
 
     private int idSeleccionado = 0;
+    
+    private SolicitanteController controller = new SolicitanteController();
 
     public PanelSolicitantes() {
     	
@@ -114,11 +117,51 @@ public class PanelSolicitantes extends JPanel {
         lblDni.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelFormulario.add(lblDni);
 
-        txtDni = new JTextField("Ej: 42345678");
+        txtDni = new JTextField();
+        txtDni.setText("Ej:12345678");
+        txtDni.setForeground(Color.GRAY);
         txtDni.setBounds(16, 85, 278, 32);
         txtDni.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtDni.setBorder(BorderFactory.createLineBorder(new Color(200, 205, 210)));
         panelFormulario.add(txtDni);
+        
+        txtDni.addFocusListener(new java.awt.event.FocusAdapter() {
+
+            @Override
+            public void focusGained(java.awt.event.FocusEvent e) {
+
+                if (txtDni.getText().equals("Ej:12345678")) {
+                    txtDni.setText("");
+                    txtDni.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+
+                if (txtDni.getText().trim().isEmpty()) {
+                    txtDni.setText("Ej:12345678");
+                    txtDni.setForeground(Color.GRAY);
+                }
+            }
+        });
+
+        txtDni.addKeyListener(new java.awt.event.KeyAdapter() {
+
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e) {
+
+                char c = e.getKeyChar();
+
+                if (!Character.isDigit(c)) {
+                    e.consume();
+                }
+
+                if (txtDni.getText().length() >= 8) {
+                    e.consume();
+                }
+            }
+        });
 
         JLabel lblNombre = new JLabel("Nombre");
         lblNombre.setBounds(16, 130, 120, 20);
@@ -348,7 +391,8 @@ public class PanelSolicitantes extends JPanel {
 
             modelo.setRowCount(0);
 
-            ArrayList<Solicitante> lista = dao.listar();
+            ArrayList<Solicitante> lista =
+                    controller.listar();
 
             for (Solicitante s : lista) {
 
@@ -416,13 +460,12 @@ public class PanelSolicitantes extends JPanel {
         
         private void buscarSolicitante() {
 
-            SolicitanteDAO dao = new SolicitanteDAO();
+            String texto = txtBuscar.getText();
 
             modelo.setRowCount(0);
 
             ArrayList<Solicitante> lista =
-                    dao.buscarPorDniNombreApellido(
-                            txtBuscar.getText());
+                    controller.buscarPorDniNombreApellido(texto);
 
             for (Solicitante s : lista) {
 
@@ -441,65 +484,103 @@ public class PanelSolicitantes extends JPanel {
         
         private void guardarSolicitante() {
 
-            if (txtDni.getText().trim().isEmpty()
-                    || txtNombre.getText().trim().isEmpty()
-                    || txtApellidos.getText().trim().isEmpty()) {
+            String dni = txtDni.getText().trim();
+            String nombre = txtNombre.getText().trim();
+            String apellido = txtApellidos.getText().trim();
+            String salonArea = txtAreaCarrera.getText().trim();
+            String telefono = txtTelefono.getText().trim();
+            String correo = txtCorreo.getText().trim();
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Complete los campos obligatorios");
-
+            // Validar DNI
+            if (!dni.matches("\\d{8}")) {
+                JOptionPane.showMessageDialog(this, "Ingrese un DNI válido de 8 dígitos.");
+                txtDni.requestFocus();
                 return;
             }
 
-            SolicitanteDAO dao = new SolicitanteDAO();
+            // Validar nombre
+            if (nombre.isBlank()) {
+                JOptionPane.showMessageDialog(this, "Ingrese el nombre.");
+                txtNombre.requestFocus();
+                return;
+            }
+
+            // Validar apellidos
+            if (apellido.isBlank()) {
+                JOptionPane.showMessageDialog(this, "Ingrese los apellidos.");
+                txtApellidos.requestFocus();
+                return;
+            }
+
+            // Validar área/carrera
+            if (salonArea.isBlank()) {
+                JOptionPane.showMessageDialog(this, "Ingrese el área o carrera.");
+                txtAreaCarrera.requestFocus();
+                return;
+            }
+
+            // Validar teléfono
+            if (!telefono.matches("^9\\d{8}$")) {
+                JOptionPane.showMessageDialog(this,
+                        "El teléfono debe tener 9 dígitos y empezar con 9.");
+                txtTelefono.requestFocus();
+                return;
+            }
+
+            // Validar correo (no es obligatorio)
+            if (!correo.isBlank()) {
+                if (!correo.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+                    JOptionPane.showMessageDialog(this, "Ingrese un correo válido.");
+                    txtCorreo.requestFocus();
+                    return;
+                }
+            }
+
+            
 
             Solicitante s = new Solicitante();
-
-            s.setDni(txtDni.getText().trim());
-            s.setNombre(txtNombre.getText().trim());
-            s.setApellidos(txtApellidos.getText().trim());
+            s.setDni(dni);
+            s.setNombre(nombre);
+            s.setApellidos(apellido);
             s.setTipo(cboTipo.getSelectedItem().toString());
-            s.setSalonCurso(txtAreaCarrera.getText().trim());
-            s.setCelular(txtTelefono.getText().trim());
-            s.setCorreo(txtCorreo.getText().trim());
+            s.setSalonCurso(salonArea);
+            s.setCelular(telefono);
+            s.setCorreo(correo);
 
             boolean resultado;
 
             if (idSeleccionado == 0) {
 
-                if (dao.existeDni(s.getDni())) {
-
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "El DNI ya existe");
-
+                // Nuevo registro
+                if (controller.existeDni(dni)) {
+                    JOptionPane.showMessageDialog(this,
+                            "Ya existe un solicitante con este DNI.");
+                    txtDni.requestFocus();
                     return;
                 }
 
-                resultado = dao.guardar(s);
+                resultado = controller.guardar(s);
 
             } else {
 
+                // Actualización
                 s.setIdSolicitante(idSeleccionado);
-
-                resultado = dao.actualizar(s);
+                resultado = controller.actualizar(s);
             }
 
             if (resultado) {
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Datos guardados correctamente");
+                JOptionPane.showMessageDialog(this,
+                        "Datos guardados correctamente.");
 
                 listarSolicitantes();
                 limpiarCampos();
+                idSeleccionado = 0;
 
             } else {
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "No se pudo guardar");
+                JOptionPane.showMessageDialog(this,
+                        "No se pudo guardar la información.");
             }
         }
         
@@ -524,9 +605,7 @@ public class PanelSolicitantes extends JPanel {
                 return;
             }
 
-            SolicitanteDAO dao = new SolicitanteDAO();
-
-            if (dao.eliminar(idSeleccionado)) {
+            if (controller.eliminar(idSeleccionado)) {
 
                 JOptionPane.showMessageDialog(
                         this,
@@ -543,3 +622,4 @@ public class PanelSolicitantes extends JPanel {
             }
         }
     }
+
