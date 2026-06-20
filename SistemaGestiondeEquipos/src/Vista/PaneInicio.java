@@ -29,8 +29,10 @@ import java.util.Locale;
 
 import Controller.EquipoController;
 import Controller.PrestamoController;
+import Controller.SolicitanteController;
 import Modelo.Equipo;
 import Modelo.Prestamo;
+import Modelo.Solicitante;
 
 public class PaneInicio extends JPanel {
 	
@@ -41,7 +43,9 @@ public class PaneInicio extends JPanel {
 
 	private EquipoController equipoController = new EquipoController();
 	private PrestamoController prestamoController = new PrestamoController();
-
+	private SolicitanteController solicitanteController = new SolicitanteController();
+	
+	
 	private JLabel lblNumEquiposRegistrados;
 	private JLabel lblDetalleEquiposRegistrados;
 	private JLabel lblNumEquiposDisponibles;
@@ -207,7 +211,7 @@ public class PaneInicio extends JPanel {
         modeloTabla = new DefaultTableModel(
             new Object[][] {},
             new String[] {
-                "ID", "EQUIPO", "ID SOLICITANTE", "FECHA PRÉSTAMO", "FECHA DEVOLUCIÓN", "ESTADO"
+            		"ID", "EQUIPO", "SOLICITANTE", "FECHA PRÉSTAMO", "FECHA DEVOLUCIÓN", "ESTADO"
             }
         ) {
             private static final long serialVersionUID = 1L;
@@ -246,8 +250,11 @@ public class PaneInicio extends JPanel {
 	}
 
 	private void cargarDatos() {
-        ArrayList<Equipo> equipos = equipoController.listar();
-        ArrayList<Prestamo> prestamos = prestamoController.listar();
+		ArrayList<Equipo> equipos = equipoController.listar();
+		ArrayList<Prestamo> prestamos = prestamoController.listar();
+		ArrayList<Solicitante> solicitantes = solicitanteController.listar();
+        
+        
 
         int totalEquipos = equipos.size();
         int disponibles = 0;
@@ -310,10 +317,18 @@ public class PaneInicio extends JPanel {
             String fechaPrestamo = p.getFechaPrestamo() != null ? p.getFechaPrestamo().format(formato) : "-";
             String fechaDevolucion = p.getFechaDevolucionPrevista() != null ? p.getFechaDevolucionPrevista().format(formato) : "-";
 
+            String nombreSolicitante = "Solicitante #" + p.getIdSolicitante();
+            for (Solicitante s : solicitantes) {
+                if (s.getIdSolicitante() == p.getIdSolicitante()) {
+                    nombreSolicitante = s.getNombre() + " " + s.getApellidos();
+                    break;
+                }
+            }
+
             modeloTabla.addRow(new Object[]{
                 "PR-" + p.getIdPrestamo(),
                 nombreEquipo,
-                "Solicitante #" + p.getIdSolicitante(),
+                nombreSolicitante,
                 fechaPrestamo,
                 fechaDevolucion,
                 p.getEstado()
