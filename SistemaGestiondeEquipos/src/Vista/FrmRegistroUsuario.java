@@ -125,6 +125,12 @@ public class FrmRegistroUsuario extends JFrame {
                     JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos.", "Aviso", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
+                
+               if(password.length()<6) {
+            	   JOptionPane.showMessageDialog(null, "La contraseña debe tener minimo 6 caràcteres", "Aviso", JOptionPane.WARNING_MESSAGE);
+            	   return;
+               }
+                
 
                 Usuario nuevoUsuario = new Usuario();
                 nuevoUsuario.setNombresCompletos(nombres);

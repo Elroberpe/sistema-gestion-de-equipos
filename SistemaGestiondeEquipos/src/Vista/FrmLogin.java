@@ -3,8 +3,11 @@ package Vista;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -47,12 +50,19 @@ public class FrmLogin extends JFrame {
         contentPane.setLayout(null);
         setContentPane(contentPane);
 
-        JLabel lblIcono = new JLabel("💻"); 
+        ImageIcon iconoOriginal = new ImageIcon(getClass().getResource("/imagenes/logo.png"));
+
+        Image imagenEscalada = iconoOriginal.getImage().getScaledInstance(
+                80, 80, Image.SCALE_SMOOTH);
+
+        ImageIcon icono = new ImageIcon(imagenEscalada);
+
+        JLabel lblIcono = new JLabel(icono);
         lblIcono.setHorizontalAlignment(SwingConstants.CENTER);
-        lblIcono.setFont(new Font("Segoe UI", Font.PLAIN, 40));
         lblIcono.setBounds(150, 20, 80, 60);
-        lblIcono.setBorder(new LineBorder(new Color(200, 220, 255), 2)); 
-        contentPane.add(lblIcono);
+    
+
+        contentPane.add(lblIcono);;
 
         // --- TÍTULO ---
         JLabel lblTitulo = new JLabel("Sistema de Préstamo de Equipos");
