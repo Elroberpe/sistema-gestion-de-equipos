@@ -11,7 +11,7 @@ public class PrestamoDao {
 	public boolean guardar(Prestamo prestamo) 
 		 { String sql = "INSERT INTO Prestamo (IdEquipo, IdSolicitante,FechaPrestamo, HoraPrestamo, FechaDevolucionPrevista, Observaciones, Estado)"
 				     + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-	       try {Connection con = Conexion.getConexion();
+	       try {Connection con = Conexion.getInstancia().getConexion();
 		        PreparedStatement ps = con.prepareStatement(sql);
 							      ps.setInt(1, prestamo.getIdEquipo());
 							      ps.setInt(2, prestamo.getIdSolicitante());
@@ -32,7 +32,7 @@ public class PrestamoDao {
 	public ArrayList<Prestamo> listar()
 		 { ArrayList<Prestamo> lista = new ArrayList<>();
 		   String sql = "SELECT * FROM Prestamo";
-		   try {Connection con = Conexion.getConexion();
+		   try {Connection con = Conexion.getInstancia().getConexion();
 		       	Statement st = con.createStatement();
 		       	ResultSet rs = st.executeQuery(sql);
 		       	while (rs.next()) {
@@ -56,7 +56,7 @@ public class PrestamoDao {
 	public boolean actualizar(Prestamo prestamo)
 		 { String sql = "UPDATE Prestamo SET IdEquipo=?, IdSolicitante=?, FechaPrestamo=?, HoraPrestamo=?, FechaDevolucionPrevista=?, Observaciones=?, "
 				 	 + "Estado=? WHERE IdPrestamo=?";
-		   try {Connection con = Conexion.getConexion();
+		   try {Connection con = Conexion.getInstancia().getConexion();
 		        PreparedStatement ps = con.prepareStatement(sql);
 							      ps.setInt(1, prestamo.getIdEquipo());
 							      ps.setInt(2, prestamo.getIdSolicitante());
@@ -77,7 +77,7 @@ public class PrestamoDao {
 	//ELIMINAR PRÉSTAMO ================================================================================================================================================================
 	public boolean eliminar(int idPrestamo)
 		 { String sql = "DELETE FROM Prestamo WHERE IdPrestamo=?";
-		   try {Connection con = Conexion.getConexion();
+		   try {Connection con = Conexion.getInstancia().getConexion();
 		       PreparedStatement ps = con.prepareStatement(sql);
 						         ps.setInt(1, idPrestamo);
 						         ps.executeUpdate();
@@ -97,7 +97,7 @@ public class PrestamoDao {
 		                "CAST(IdEquipo AS VARCHAR) LIKE ? OR " +
 		                "Estado LIKE ? OR " +
 		                "CAST(FechaPrestamo AS VARCHAR) LIKE ?";
-		   try {Connection con = Conexion.getConexion();
+		   try {Connection con = Conexion.getInstancia().getConexion();
 		        PreparedStatement ps = con.prepareStatement(sql);
 		        String busqueda = "%" + texto + "%";
 							      ps.setString(1, busqueda);
@@ -127,7 +127,7 @@ public class PrestamoDao {
 	public boolean tienePrestamoActivo(int idEquipo)
 		 {String sql = "SELECT COUNT(*) FROM Prestamo WHERE " +
 		                "IdEquipo=? AND Estado='Activo'";
-		  try {Connection con = Conexion.getConexion();
+		  try {Connection con = Conexion.getInstancia().getConexion();
 		       PreparedStatement ps = con.prepareStatement(sql);
 		       					 ps.setInt(1, idEquipo);
 		       ResultSet rs = ps.executeQuery();
@@ -142,7 +142,7 @@ public class PrestamoDao {
 	public boolean anularPrestamo(int idPrestamo)
 		 { String sql = "UPDATE Prestamo SET Estado='Anulado' " +
 		                "WHERE IdPrestamo=?";
-		   try {Connection con = Conexion.getConexion();
+		   try {Connection con = Conexion.getInstancia().getConexion();
 		        PreparedStatement ps = con.prepareStatement(sql);
 							     ps.setInt(1, idPrestamo);
 							     ps.executeUpdate();

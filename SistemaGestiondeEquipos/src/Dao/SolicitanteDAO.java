@@ -9,7 +9,7 @@ public class SolicitanteDAO {
 
     public boolean guardar(Solicitante solicitante) {
         String sql = "INSERT INTO Solicitante (DNI, Nombre, Apellidos, Tipo, SalonCurso, Celular, Correo) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, solicitante.getDni());
             ps.setString(2, solicitante.getNombre());
@@ -27,7 +27,7 @@ public class SolicitanteDAO {
 
     public boolean actualizar(Solicitante solicitante) {
         String sql = "UPDATE Solicitante SET DNI=?, Nombre=?, Apellidos=?, Tipo=?, SalonCurso=?, Celular=?, Correo=? WHERE IdSolicitante=?";
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, solicitante.getDni());
             ps.setString(2, solicitante.getNombre());
@@ -47,7 +47,7 @@ public class SolicitanteDAO {
     public boolean eliminar(int idSolicitante) {
         // Primero verificamos si tiene préstamos (Regla de negocio 7)
         String checkSql = "SELECT COUNT(*) FROM Prestamo WHERE IdSolicitante = ?";
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement psCheck = con.prepareStatement(checkSql)) {
             psCheck.setInt(1, idSolicitante);
             ResultSet rs = psCheck.executeQuery();
@@ -60,7 +60,7 @@ public class SolicitanteDAO {
         }
 
         String sql = "DELETE FROM Solicitante WHERE IdSolicitante=?";
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idSolicitante);
             return ps.executeUpdate() > 0;
@@ -73,7 +73,7 @@ public class SolicitanteDAO {
     public ArrayList<Solicitante> listar() {
         ArrayList<Solicitante> lista = new ArrayList<>();
         String sql = "SELECT * FROM Solicitante";
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
@@ -97,7 +97,7 @@ public class SolicitanteDAO {
     public ArrayList<Solicitante> buscarPorDniNombreApellido(String texto) {
         ArrayList<Solicitante> lista = new ArrayList<>();
         String sql = "SELECT * FROM Solicitante WHERE DNI LIKE ? OR Nombre LIKE ? OR Apellidos LIKE ?";
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             String t = "%" + texto + "%";
             ps.setString(1, t);
@@ -124,7 +124,7 @@ public class SolicitanteDAO {
 
     public boolean existeDni(String dni) {
         String sql = "SELECT COUNT(*) FROM Solicitante WHERE DNI = ?";
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, dni);
             ResultSet rs = ps.executeQuery();

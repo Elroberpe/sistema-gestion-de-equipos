@@ -5,7 +5,7 @@ import java.sql.Connection;
 public class ProbarConexion {
 
     public static void main(String[] args) {
-        Connection con = Conexion.getConexion();
+        Connection con = Conexion.getInstancia().getConexion();
 
         if (con != null) {
             System.out.println("Conexión exitosa");

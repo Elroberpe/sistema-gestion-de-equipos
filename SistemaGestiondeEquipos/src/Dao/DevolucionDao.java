@@ -36,7 +36,7 @@ public class DevolucionDao {
                         ORDER BY P.IdPrestamo DESC 
 					""";
 			try(
-				Connection con = Conexion.getConexion();
+				Connection con = Conexion.getInstancia().getConexion();
 				PreparedStatement ps = con.prepareStatement(consultaSql);
 				ResultSet rs = ps.executeQuery();
 				){
@@ -120,7 +120,7 @@ public class DevolucionDao {
 
 			
 			try(
-				Connection con = Conexion.getConexion();
+				Connection con = Conexion.getInstancia().getConexion();
 				PreparedStatement ps = con.prepareStatement(consulta.toString())
 				){
 				
@@ -173,7 +173,7 @@ public class DevolucionDao {
 					WHERE Estado = 'Activo' AND FechaDevolucionPrevista < CAST(GETDATE () as DATE)
 					""";
 			try (
-				Connection con = Conexion.getConexion();
+				Connection con = Conexion.getInstancia().getConexion();
 				PreparedStatement ps = con.prepareStatement(consulta)
 					){		
 				ps.executeUpdate();		
@@ -208,7 +208,7 @@ public class DevolucionDao {
 			Connection con = null;
 			
 			try{
-				con = Conexion.getConexion();
+				con = Conexion.getInstancia().getConexion();
 				
 				con.setAutoCommit(false);
 				

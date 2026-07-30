@@ -17,7 +17,7 @@ public class UsuarioDAO {
         String sql = "SELECT IdUsuario, Username, PasswordHash, NombresCompletos, Rol, Estado " +
                      "FROM Usuario WHERE Username = ? AND Estado = 'Activo'";
         
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             
             pstmt.setString(1, username);
@@ -51,7 +51,7 @@ public class UsuarioDAO {
         String sql = "INSERT INTO Usuario (Username, PasswordHash, NombresCompletos, Rol, Estado) VALUES (?, ?, ?, ?, ?)";
         String hashGenerado = BCrypt.hashpw(passwordPlana, BCrypt.gensalt());
 
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             
             pstmt.setString(1, usuario.getUsername());
@@ -74,7 +74,7 @@ public class UsuarioDAO {
 
     	String sql = "UPDATE Usuario SET Username = ?, NombresCompletos = ?, Rol = ?, Estado = ? WHERE IdUsuario = ?";
         
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             
             pstmt.setString(1, usuario.getUsername());          
@@ -96,7 +96,7 @@ public class UsuarioDAO {
         String sql = "UPDATE Usuario SET PasswordHash = ? WHERE IdUsuario = ?";
         String hashGenerado = BCrypt.hashpw(nuevaPasswordPlana, BCrypt.gensalt());
 
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             
             pstmt.setString(1, hashGenerado);
@@ -115,7 +115,7 @@ public class UsuarioDAO {
         String sql = "SELECT IdUsuario, Username, NombresCompletos, Rol, Estado FROM Usuario " +
                      "WHERE Username LIKE ? OR NombresCompletos LIKE ?";
         
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             
             String parametroBusqueda = "%" + termino + "%";
@@ -146,7 +146,7 @@ public class UsuarioDAO {
  
     	String sql = "DELETE FROM Usuario WHERE IdUsuario = ?";
         
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement pstmt = con.prepareStatement(sql)) {
             
             pstmt.setInt(1, idUsuario);
@@ -166,7 +166,7 @@ public class UsuarioDAO {
         
         String sql = "SELECT IdUsuario, Username, NombresCompletos, Rol, Estado FROM Usuario";
         
-        try (Connection con = Conexion.getConexion();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement pstmt = con.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             

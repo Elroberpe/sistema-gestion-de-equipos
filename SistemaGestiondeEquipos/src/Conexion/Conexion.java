@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Conexion {
+	
+	private static Conexion instancia;
+	private Connection conexion;
 
     private static final String URL =
             "jdbc:sqlserver://localhost:1433;"
@@ -14,13 +17,25 @@ public class Conexion {
 
     private static final String USER = "sa";
     private static final String PASSWORD = "123456";
-
-    public static Connection getConexion() {
-        try {
-            return DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (SQLException e) {
-            System.out.println("Error al conectar con SQL Server: " + e.getMessage());
-            return null;
+    
+    
+    private Conexion() {
+    	try {
+    		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    		conexion = DriverManager.getConnection(URL,USER,PASSWORD);
+    	}catch(ClassNotFoundException |SQLException e) {
+    		e.printStackTrace();
+    	}
+    }
+    
+    public static Conexion getInstancia() {
+        if(instancia == null) {
+        	instancia = new Conexion();
         }
+        return instancia;
+    }
+    
+    public Connection getConexion() {
+    	return conexion;
     }
 }
